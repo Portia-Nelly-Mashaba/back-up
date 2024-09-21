@@ -14,7 +14,7 @@ const Hotels = () => {
       <div className='container mx-auto lg:px-0'>
         <div className='grid grid-cols-1 max-w-sm max-auto gap-[30px] lg:grid-cols-3 lg:max-w-none lg:mx-0'>
         { hotels.map((hotel) => {
-          console.log(hotel);
+          // console.log(hotel);
           return <Hotel hotel={hotel} key={hotel.id}/>;
         })}
         </div>
