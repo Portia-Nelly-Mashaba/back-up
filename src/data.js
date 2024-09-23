@@ -61,7 +61,7 @@ export const hotelData = [
       { name: 'Parking Space', icon: <FaParking /> },
       { name: 'Swimming Pool', icon: <FaSwimmingPool /> },
       { name: 'Breakfast', icon: <FaHotdog /> },
-      { name: 'GYM', icon: <FaStopwatch /> },
+      // { name: 'GYM', icon: <FaStopwatch /> },
       { name: 'Drinks', icon: <FaCocktail /> },
     ],
     size: 70,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 
-const Header = () => {
+const WebsiteHeader = () => {
   const [header, setHeader] = useState(false);
   useEffect(() => {
     window.addEventListener('scroll', () => {
@@ -40,4 +40,4 @@ const Header = () => {
   )
 };
 
-export default Header;
+export default WebsiteHeader;

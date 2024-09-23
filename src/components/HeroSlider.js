@@ -48,7 +48,7 @@ const HeroSlider = () => {
         //destructure slide
         const { title, bg, btnText } = slide
         return (
-          <SwiperSlide className='h-full bg-pink-400 relative flex justity-center items-center' key={index}>
+          <SwiperSlide className='h-full relative flex justity-center items-center' key={index}>
             <div className='z-20 text-white text-center mx-auto'>
               <div className='uppercase font-tertiary tracking-[6px] mb-5'>
                 Just Enjoy and relax

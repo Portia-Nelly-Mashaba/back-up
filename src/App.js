@@ -7,17 +7,25 @@ import Home from './pages/Home';
 import HotelDetails from './pages/HotelDetails'
 //react router
 import { createBrowserRouter, RouterProvider} from 'react-router-dom';
+import BookingPage from './pages/BookingPage';
 
 const router = createBrowserRouter ([
+  
   {
     path: '/',
     element: <Home />
+  },
+  {
+    
+    path: '/book',
+    element: <BookingPage />
   },
   {
     path: '/hotel/:id',
     element: <HotelDetails />
   },
 ])
+
 const App = () => {
   return (
     <div>
