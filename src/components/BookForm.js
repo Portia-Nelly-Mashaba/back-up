@@ -4,12 +4,12 @@ import CheckIn from './CheckIn';
 import CheckOut from './CheckOut';
 import KidsDropdown from './KidsDropdown';
 import AdultsDropdown from './AdultsDropdown';
-import { useContext } from 'react';
-import { HotelContext } from '../context/HotelContext';
+//import { useContext } from 'react';
+//import { HotelContext } from '../context/HotelContext';
 
 
 const BookForm = () => {
-  const {handleClick } = useContext(HotelContext);
+  //const {handleClick } = useContext(HotelContext);
   return (
     <form className='h-[300px] w-full lg:h-[70px]'>
       <div className='flex flex-col w-full h-full lg:flex-row'>
@@ -33,7 +33,6 @@ const BookForm = () => {
         </div>
         {/* button */}
         <button 
-          onClick={(e) => handleClick(e)} 
           type='submit' 
           className='btn btn-primary'>
             Check Now
