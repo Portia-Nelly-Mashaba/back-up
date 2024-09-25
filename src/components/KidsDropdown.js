@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Menu } from '@headlessui/react';
 import { BsChevronDown } from 'react-icons/bs';
-import { HotelContext } from '../context/HotelContext';
+import { HotelContext } from '../context/HotelContext.js';
 
 
 const list = [

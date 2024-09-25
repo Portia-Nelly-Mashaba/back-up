@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { HotelContext } from '../context/HotelContext';
+import { HotelContext } from '../context/HotelContext.js';
 import Hotel from './Hotel';
 //loader
 import { SpinnerDotted } from 'spinners-react';

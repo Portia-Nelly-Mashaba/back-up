@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { useParams  } from 'react-router-dom';
 import { FaCheck } from 'react-icons/fa';
-import { HotelContext } from '../context/HotelContext';
+import { HotelContext } from '../context/HotelContext.js';
 
 import AdultsDropdown from '../components/AdultsDropdown';
 import KidsDropdown from '../components/KidsDropdown';

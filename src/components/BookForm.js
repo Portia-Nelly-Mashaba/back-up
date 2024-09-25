@@ -5,7 +5,7 @@ import CheckOut from './CheckOut';
 import KidsDropdown from './KidsDropdown';
 import AdultsDropdown from './AdultsDropdown';
 import { useContext } from 'react';
-import { HotelContext } from '../context/HotelContext';
+import { HotelContext } from '../context/HotelContext.js';
 
 
 const BookForm = () => {
