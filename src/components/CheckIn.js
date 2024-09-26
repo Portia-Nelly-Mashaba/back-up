@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
-//datepicker
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../datepicker.css';
-import { BsCalendar } from 'react-icons/bs'
+import { BsCalendar } from 'react-icons/bs';
 
 const CheckIn = () => {
-  const [startDate, setStartDate] = useState(false);
+  const [startDate, setStartDate] = useState(null); // Default value
+
   return (
     <div className='relative flex items-center justify-end h-full'>
-      {/* calendar icon */}
       <div className='absolute z-10 pr-8'>
-        <div>
-          <BsCalendar className='text-accent text-base'/>
-        </div>
+        <BsCalendar className='text-accent text-base'/>
       </div>
       <DatePicker 
         className='w-full h-full' 
@@ -21,7 +18,35 @@ const CheckIn = () => {
         placeholderText='Check In'
         onChange={(date) => setStartDate(date)} />
     </div>
-  )
+  );
 };
 
 export default CheckIn;
+
+// import React, { useState } from 'react';
+// //datepicker
+// import DatePicker from 'react-datepicker';
+// import 'react-datepicker/dist/react-datepicker.css';
+// import '../datepicker.css';
+// import { BsCalendar } from 'react-icons/bs'
+
+// const CheckIn = () => {
+//   const [startDate, setStartDate] = useState(false);
+//   return (
+//     <div className='relative flex items-center justify-end h-full'>
+//       {/* calendar icon */}
+//       <div className='absolute z-10 pr-8'>
+//         <div>
+//           <BsCalendar className='text-accent text-base'/>
+//         </div>
+//       </div>
+//       <DatePicker 
+//         className='w-full h-full' 
+//         selected={startDate} 
+//         placeholderText='Check In'
+//         onChange={(date) => setStartDate(date)} />
+//     </div>
+//   )
+// };
+
+// export default CheckIn;

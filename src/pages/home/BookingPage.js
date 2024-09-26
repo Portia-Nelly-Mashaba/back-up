@@ -1,7 +1,7 @@
 import React from 'react';
-import Hotels from '../components/Hotels';
-import BookForm from '../components/BookForm';
-import HeroSlider from '../components/HeroSlider';
+import Hotels from '../../components/Hotels';
+import BookForm from '../../components/BookForm';
+import HeroSlider from '../../components/HeroSlider';
 // import Explore from '../components/Explore';
 // import Offers from '../components/Offers'
 

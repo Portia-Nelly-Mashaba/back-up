@@ -28,6 +28,9 @@ const Header = () => {
         </a>
         {/* Nav */}
         <nav className={`${header ? 'text-primary' : 'text-white'} flex gap-x-4 font-tertiary tracking-[3px] text-[15px] items-center uppercase lg:gap-x-8`}>
+        <a href='#' className='hover:text-accent transition'>
+            Contact Us
+          </a>
           <a href='#' className='hover:text-accent transition'>
             Register
           </a>
