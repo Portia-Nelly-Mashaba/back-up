@@ -1,12 +1,54 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import googlePic from '../../assets/img/google.svg';
 import displayImg from '../../assets/img/image.jpg';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../../firebase/config';
+
 
 const Login = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const navigate = useNavigate()
+    const location = useLocation(); 
+
+    const LoginUser = (e) => {
+        e.preventDefault();
+        setLoading(true);
+
+        signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    const user = userCredential.user;
+    setLoading(false);
+    toast.success('Login succesful...')
+    // navigate('/book')
+
+    // Navigate back to the previous page or to '/book' if no previous page
+    const from = location.state?.from?.pathname ;
+    navigate(from);
+   
+  })
+  .catch((error) => {
+    setLoading(false);
+    toast.error(error.message)
+    
+  });
+        
+    }
+
   return (
     <>
+    <ToastContainer />
       <section>
+      {loading && (
+        <div className='h-screen fixed bottom-0 top-0 bg-black/90 w-full z-50 flex justify-center items-center'>
+          <SpinnerDotted />
+        </div>
+        )}
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
           <div className="relative flex flex-col m-6 space-y-8 bg-white shadow-2xl rounded-2xl md:flex-row md:space-y-0">
             {/* Left side */}
@@ -15,13 +57,15 @@ const Login = () => {
               <span className="font-light text-gray-400 mb-8">
                 Welcome back! Please enter your details
               </span>
-              <form>
+              <form onSubmit={LoginUser}>
                 <div className="py-4">
                   <label htmlFor="email" className="mb-2 text-md block">
                     Email
                   </label>
                   <input
                     type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full p-2 border border-gray-300 rounded-md placeholder:font-light placeholder:text-gray-500"
                     name="email"
                     id="email"
@@ -35,6 +79,8 @@ const Login = () => {
                   </label>
                   <input
                     type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     name="password"
                     id="password"
                     className="w-full p-2 border border-gray-300 rounded-md placeholder:font-light placeholder:text-gray-500"
@@ -53,7 +99,7 @@ const Login = () => {
                   <span className="font-bold text-md">Forgot password</span>
                   </Link>
                 </div>
-                <button className="w-full bg-black text-white p-2 rounded-lg mb-6 hover:bg-accent hover:text-white hover:border hover:border-gray-300">
+                <button type='submit' className="w-full bg-black text-white p-2 rounded-lg mb-6 hover:bg-accent hover:text-white hover:border hover:border-gray-300">
                   Sign in
                 </button>
                 <button className="w-full border border-gray-300 text-md p-2 rounded-lg mb-6 hover:bg-accent hover:text-white">

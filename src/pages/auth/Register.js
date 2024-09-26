@@ -36,7 +36,7 @@ const Register = () => {
     toast.error(error.message);
     setLoading(false);
   });
-    }
+}
   return (
     <>
     <ToastContainer />
