@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import googlePic from '../../assets/img/google.svg';
 import displayImg from '../../assets/img/image.jpg';
 import { ToastContainer, toast } from 'react-toastify';
+import { SpinnerDotted } from 'spinners-react';
 import 'react-toastify/dist/ReactToastify.css';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from '../../firebase/config';
