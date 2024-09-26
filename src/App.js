@@ -11,9 +11,12 @@ import HotelDetails from './pages/home/HotelDetails';
 import BookingPage from './pages/home/BookingPage';
 import Dashboard from './pages/admin/Dashboard';
 import ShowNavbar from './components/showNavbar';
-import Booking from './pages/booking/Booking';
 import BookingHistory from './pages/bookingHistory/BookingHistory';
 import Contact from './pages/contact/Contact';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import Saved from './pages/saved/Saved';
+import Reset from './pages/auth/Reset';
 
 // import Error from './pages/Error'; // Assuming you have an Error component
 
@@ -22,8 +25,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ShowFooter from './components/ShowFooter';
 
 
+
+
 const App = () => {
-  const [first, setFirst] = useState('Mzansi Stays');
+  
   return (
     <Router>
       <ShowNavbar>
@@ -34,8 +39,11 @@ const App = () => {
         {/* Existing routes */}
         <Route path="/" element={<Home />} />
         <Route path="/book" element={<BookingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/reset" element={<Reset />} />
         <Route path="/hotel/:id" element={<HotelDetails />} />
-        <Route path="/booking" element={<Booking />} />
+        <Route path="/saved" element={<Saved />} />
         <Route path="/booking/history" element={<BookingHistory />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin" element={<Dashboard />} />

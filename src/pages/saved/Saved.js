@@ -1,11 +1,11 @@
 import React from 'react'
 
-const Booking = () => {
+const Saved = () => {
   return (
     <div>
-      Booking tab
+      Saved Trips
     </div>
   )
 }
 
-export default Booking
+export default Saved

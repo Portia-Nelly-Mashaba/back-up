@@ -1,5 +1,8 @@
 import React from 'react';
 
+const date = new Date()
+const year = date.getFullYear()
+
 const Footer = () => {
   return (
     <footer className='bg-primary py-12'>
@@ -7,7 +10,7 @@ const Footer = () => {
       <a href='/book'>
         <h1 className='font-primary w-[200px] text-[30px] text-accent'>Mzansi Stays</h1>
       </a>
-      Copyright &copy; 2024. All rights reserved.
+      Copyright &copy; {year}. All rights reserved.
       </div>
     
     </footer>

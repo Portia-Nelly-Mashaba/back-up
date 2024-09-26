@@ -10,7 +10,7 @@ const ShowFooter = ({ children }) => {
     console.log('Current location:', location);
     
     // Hide the header if the pathname is '/' or '/admin'
-    if (location.pathname === '/' || location.pathname === '/admin') {
+    if (location.pathname === '/' || location.pathname === '/admin' || location.pathname === '/login') {
       setShowFooter(false);
     } else {
       setShowFooter(true);
