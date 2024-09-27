@@ -1,54 +1,61 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import googlePic from '../../assets/img/google.svg';
-import displayImg from '../../assets/img/image.jpg';
-import { ToastContainer, toast } from 'react-toastify';
+import loginImg from '../../assets/img/LoginImg.jpg';
+// import { toast } from 'react-toastify';
 import { SpinnerDotted } from 'spinners-react';
-import 'react-toastify/dist/ReactToastify.css';
-import { signInWithEmailAndPassword } from "firebase/auth";
+// import 'react-toastify/dist/ReactToastify.css';
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth } from '../../firebase/config';
+import { GoogleAuthProvider } from 'firebase/auth';
 
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-    const navigate = useNavigate()
-    const location = useLocation(); 
+  const navigate = useNavigate();
 
-    const LoginUser = (e) => {
-        e.preventDefault();
-        setLoading(true);
+  // Function for login with email and password
+  const LoginUser = (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-        signInWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    const user = userCredential.user;
-    setLoading(false);
-    toast.success('Login succesful...')
-    // navigate('/book')
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        setLoading(false);
+        window.alert('Login successful...');
+        navigate(-1);
+      })
+      .catch((error) => {
+        setLoading(false);
+        window.alert(error.message);
+      });
+  };
 
-    // Navigate back to the previous page or to '/book' if no previous page
-    const from = location.state?.from?.pathname ;
-    navigate(from);
-   
-  })
-  .catch((error) => {
-    setLoading(false);
-    toast.error(error.message)
-    
-  });
-        
-    }
+  // Function for Google login
+  const loginWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const user = result.user;
+        window.alert('Login Successfully');
+        navigate(-1);
+      })
+      .catch((error) => {
+        window.alert(error.message);
+      });
+  };
 
   return (
     <>
-    <ToastContainer />
       <section>
-      {loading && (
-        <div className='h-screen fixed bottom-0 top-0 bg-black/90 w-full z-50 flex justify-center items-center'>
-          <SpinnerDotted />
-        </div>
+        {loading && (
+          <div className='h-screen fixed bottom-0 top-0 bg-black/90 w-full z-50 flex justify-center items-center'>
+            <SpinnerDotted />
+          </div>
         )}
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
           <div className="relative flex flex-col m-6 space-y-8 bg-white shadow-2xl rounded-2xl md:flex-row md:space-y-0">
@@ -97,28 +104,28 @@ const Login = () => {
                     </label>
                   </div>
                   <Link to="/reset">
-                  <span className="font-bold text-md">Forgot password</span>
+                    <span className="font-bold text-md">Forgot password</span>
                   </Link>
                 </div>
                 <button type='submit' className="w-full bg-black text-white p-2 rounded-lg mb-6 hover:bg-accent hover:text-white hover:border hover:border-gray-300">
                   Sign in
                 </button>
-                <button className="w-full border border-gray-300 text-md p-2 rounded-lg mb-6 hover:bg-accent hover:text-white">
-                  <img src={googlePic} alt="Google" className="w-6 h-6 inline mr-2" />
-                  Sign in with Google
-                </button>
-                <div className="text-center text-gray-400">
+              </form>
+              <button className="w-full border border-gray-300 text-md p-2 rounded-lg mb-6 hover:bg-accent hover:text-white" onClick={loginWithGoogle}>
+                <img src={googlePic} alt="Google" className="w-6 h-6 inline mr-2" />
+                Sign in with Google
+              </button>
+              <div className="text-center text-gray-400">
                 <Link to="/register">
                   Don’t have an account?{" "}
                   <span className="font-bold text-accent">Sign up for free</span>
-                  </Link>
-                </div>
-              </form>
+                </Link>
+              </div>
             </div>
             {/* Right side */}
             <div className="relative">
               <img
-                src={displayImg}
+                src={loginImg}
                 alt="Display"
                 className="w-[400px] h-full hidden rounded-r-2xl md:block object-cover"
               />

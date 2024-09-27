@@ -17,9 +17,9 @@ const BookForm = () => {
   return (
     <form className='h-[300px] w-full lg:h-[70px]'>
       <div className='flex flex-col w-full h-full lg:flex-row'>
-        <div className='flex-1 border-r'>
+        {/* <div className='flex-1 border-r'>
           <DestinationDropdown />
-        </div>
+        </div> */}
         <div className='flex-1 border-r'>
           <CheckIn />
         </div>

@@ -1,57 +1,58 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import googlePic from '../../assets/img/google.svg';
-import displayImg from '../../assets/img/image.jpg';
+import registerImg from '../../assets/img/RegisterImg.jpg';
 import { SpinnerDotted } from 'spinners-react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// import { toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/config';
 
 
 const Register = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-    const navigate = useNavigate()
+  const navigate = useNavigate()
 
-    const RegisterUser = (e) => {
-        e.preventDefault();
-        if (password !== confirmPassword){
-            toast.error('Passwords do not match');
-        }
+  const RegisterUser = (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      // toast.error('Passwords do not match');
+    }
 
-        setLoading(true);
-        createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    const user = userCredential.user;
-    console.log(user);
-    setLoading(false);
-    toast.success('Registration Successful')
-    navigate('/login')
-  })
-  .catch((error) => {
-    toast.error(error.message);
-    setLoading(false);
-  });
-}
+    setLoading(true);
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+        setLoading(false);
+        // toast.success('Registration Successful')
+        window.alert('Login succesful...');
+        navigate(-1);
+      })
+      .catch((error) => {
+        // toast.error(error.message);
+        window.alert(error.message);
+        setLoading(false);
+      });
+  }
   return (
     <>
-    <ToastContainer />
       <section>
-      {loading && (
-        <div className='h-screen fixed bottom-0 top-0 bg-black/90 w-full z-50 flex justify-center items-center'>
-          <SpinnerDotted />
-        </div>
+        {loading && (
+          <div className='h-screen fixed bottom-0 top-0 bg-black/90 w-full z-50 flex justify-center items-center'>
+            <SpinnerDotted />
+          </div>
         )}
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
           <div className="relative flex flex-col m-6 space-y-8 bg-white shadow-2xl rounded-2xl md:flex-row md:space-y-0">
             {/* left side */}
             <div className="relative rounded-l-2xl">
               <img
-                src={displayImg}
+                src={registerImg}
                 alt="Display"
                 className="w-[400px] h-full hidden rounded-l-2xl md:block object-cover"
               />
@@ -118,10 +119,10 @@ const Register = () => {
                 <button type='submit' className="w-full bg-black text-white p-2 rounded-lg mt-4 mb-8 hover:bg-accent hover:text-white hover:border hover:border-gray-300">
                   Register
                 </button>
-                <button className="w-full border border-gray-300 text-md p-2 rounded-lg mb-6 hover:bg-accent hover:text-white">
+                {/* <button className="w-full border border-gray-300 text-md p-2 rounded-lg mb-6 hover:bg-accent hover:text-white">
                   <img src={googlePic} alt="Google" className="w-6 h-6 inline mr-2" />
                   Register with Google
-                </button>
+                </button> */}
                 <div className="text-center text-gray-400">
                   <Link to="/login">
                     Already have an account?{" "}

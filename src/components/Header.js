@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Menu } from '@headlessui/react'
+import { auth } from '../firebase/config';
+import { signOut } from 'firebase/auth';
+import { toast } from 'react-toastify';
 
 
 const Header = () => {
@@ -11,8 +14,21 @@ const Header = () => {
     });
   });
 
+  const navigate = useNavigate()
+
+ const logoutUser = () => {
+  signOut(auth).then(() => {
+    // toast.success('Logout Successfully')
+    window.alert('Logout Successfully');
+    navigate('/book')
+  }).catch((error) => {
+    window.alert('Error logging out: ' + error.message);
+  });
+ }
 
   return (
+   <> 
+   {/* <ToastContainer /> */}
     <header 
       className={ `${ 
       header ? 'bg-white py-6 shadow-lg' : 'bg-transparent py-8'} fixed z-50 w-full transition-all duration-500`}>
@@ -83,7 +99,7 @@ const Header = () => {
                   </NavLink>
                 </Menu.Item>
                 <Menu.Item>
-                  <NavLink to="/book" className="block px-4 py-2 text-sm hover:bg-accent/25  hover:text-black text-gray-700 data-[focus]:bg-gray-100">
+                  <NavLink to="/" onClick={logoutUser} className="block px-4 py-2 text-sm hover:bg-accent/25  hover:text-black text-gray-700 data-[focus]:bg-gray-100">
                     Logout
                   </NavLink>
                 </Menu.Item>
@@ -93,6 +109,7 @@ const Header = () => {
         </nav>
       </div>
     </header>
+    </>
   )
 };
 

@@ -1,11 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import displayImg from '../../assets/img/image.jpg';
+import { auth } from '../../firebase/config';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { SpinnerDotted } from 'spinners-react';
+
 
 const Reset = () => {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const resetPassword = (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+
+    sendPasswordResetEmail(auth, email)
+  .then(() => {
+    setLoading(false);
+    window.alert('Check your email for a reset link');
+  })
+  .catch((error) => {
+    setLoading(false);
+    window.alert(error.message);
+  });
+  }
+
   return (
     <>
       <section>
+      {loading && (
+          <div className='h-screen fixed bottom-0 top-0 bg-black/90 w-full z-50 flex justify-center items-center'>
+            <SpinnerDotted />
+          </div>
+        )}
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
           <div className="relative flex flex-col m-6 space-y-8 bg-white shadow-2xl  rounded-2xl md:flex-row md:space-y-0">
             {/* Left side */}
@@ -14,13 +42,15 @@ const Reset = () => {
               <span className="font-light text-gray-400 mb-4">
                 Welcome back! Please enter your details
               </span>
-              <form>
+              <form onSubmit={resetPassword}>
                 <div className="py-4">
                   <label htmlFor="email" className="mb-2 text-md block">
                     Email
                   </label>
                   <input
                     type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full p-2 border border-gray-300 rounded-md mb-2 placeholder:font-light placeholder:text-gray-500"
                     name="email"
                     id="email"
@@ -30,7 +60,7 @@ const Reset = () => {
                 </div>
                 
                 
-                <button className="w-full bg-black text-white p-2 rounded-lg mb-2 hover:bg-accent hover:text-white hover:border hover:border-gray-300">
+                <button type='submit' className="w-full bg-black text-white p-2 rounded-lg mb-2 hover:bg-accent hover:text-white hover:border hover:border-gray-300">
                   Reset Password
                 </button>
 
