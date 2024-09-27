@@ -2,19 +2,44 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Menu } from '@headlessui/react'
 import { auth } from '../firebase/config';
-import { signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { SET_ACTIVE_USER } from '../redux/slice/authSlice';
 
 
 const Header = () => {
   const [header, setHeader] = useState(false);
+  const [displayName, setDisplayName] = useState('');
+
+  const navigate = useNavigate()
+
+  const dispatch = useDispatch();
+
+  //Monitor currently sign in user
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log(user.displayName); 
+        setDisplayName(user.displayName); 
+
+        dispatch(SET_ACTIVE_USER({
+          email: "",
+          userName: "",
+          userID: "",
+        }))
+      } else {
+        setDisplayName(""); 
+      }
+    });
+  }, []);
+
   useEffect(() => {
     window.addEventListener('scroll', () => {
       window.scrollY > 50 ? setHeader(true) : setHeader(false);
     });
   });
 
-  const navigate = useNavigate()
 
  const logoutUser = () => {
   signOut(auth).then(() => {
@@ -68,7 +93,9 @@ const Header = () => {
                     className="h-8 w-8 rounded-full"
                   />
                 </Menu.Button>
+              
               </div>
+             
               <Menu.Items
                 transition
                 className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
@@ -105,6 +132,10 @@ const Header = () => {
                 </Menu.Item>
               </Menu.Items>
             </Menu>
+
+            <NavLink to='/book' className=' text-accent hover:text-white transition'>
+            {displayName || 'Guest'}
+          </NavLink>
 
         </nav>
       </div>
