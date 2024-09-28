@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import googlePic from '../../assets/img/google.svg';
+// import googlePic from '../../assets/img/google.svg';
 import registerImg from '../../assets/img/RegisterImg.jpg';
 import { SpinnerDotted } from 'spinners-react';
-// import { toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/config';
 
@@ -20,7 +20,7 @@ const Register = () => {
   const RegisterUser = (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      // toast.error('Passwords do not match');
+      toast.error('Passwords do not match');
     }
 
     setLoading(true);
@@ -29,13 +29,13 @@ const Register = () => {
         const user = userCredential.user;
         console.log(user);
         setLoading(false);
-        // toast.success('Registration Successful')
-        window.alert('Login succesful...');
+        toast.success('Registration Successful')
+        // window.alert('Registration succesful...');
         navigate(-1);
       })
       .catch((error) => {
-        // toast.error(error.message);
-        window.alert(error.message);
+        toast.error(error.message);
+        // window.alert(error.message);
         setLoading(false);
       });
   }

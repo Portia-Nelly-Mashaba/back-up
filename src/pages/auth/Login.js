@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import googlePic from '../../assets/img/google.svg';
 import loginImg from '../../assets/img/LoginImg.jpg';
-// import { toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { SpinnerDotted } from 'spinners-react';
-// import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css';
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth } from '../../firebase/config';
 import { GoogleAuthProvider } from 'firebase/auth';
@@ -24,14 +24,16 @@ const Login = () => {
 
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        const user = userCredential.user;
+        // const user = userCredential.user;
         setLoading(false);
-        window.alert('Login successful...');
+        toast.success('Login Successful')
+        // window.alert('Login successful...');
         navigate(-1);
       })
       .catch((error) => {
         setLoading(false);
-        window.alert(error.message);
+        toast.error(error.message);
+        // window.alert(error.message);
       });
   };
 
@@ -40,12 +42,14 @@ const Login = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
       .then((result) => {
-        const user = result.user;
-        window.alert('Login Successfully');
+        // const user = result.user;
+        toast.success('Login Successful')
+        // window.alert('Login Successfully');
         navigate(-1);
       })
       .catch((error) => {
-        window.alert(error.message);
+        toast.error(error.message)
+        // window.alert(error.message);
       });
   };
 

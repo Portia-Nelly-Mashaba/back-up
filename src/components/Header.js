@@ -5,7 +5,9 @@ import { auth } from '../firebase/config';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { SET_ACTIVE_USER } from '../redux/slice/authSlice';
+import { REMOVE_ACTIVE_USER, SET_ACTIVE_USER } from '../redux/slice/authSlice';
+import ShowOnLogin, { ShowOnLogout } from './hiddenLink/HiddenLinks';
+import AdminOnlyRoute from './adminOnlyRoute/AdminOnlyRoute';
 
 
 const Header = () => {
@@ -16,23 +18,31 @@ const Header = () => {
 
   const dispatch = useDispatch();
 
-  //Monitor currently sign in user
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log(user.displayName); 
-        setDisplayName(user.displayName); 
-
-        dispatch(SET_ACTIVE_USER({
-          email: "",
-          userName: "",
-          userID: "",
-        }))
+  // Monitor currently signed-in user
+useEffect(() => {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log(user);
+      if (!user.displayName) {
+        const u1 = user.email.split('@')[0]; // Get email prefix
+        const uName = u1.charAt(0).toUpperCase() + u1.slice(1);
+        setDisplayName(uName);
       } else {
-        setDisplayName(""); 
+        setDisplayName(user.displayName);
       }
-    });
-  }, []);
+
+      // Dispatch the active user to Redux
+      dispatch(SET_ACTIVE_USER({
+        email: user.email,
+        userName: user.displayName ? user.displayName : displayName,
+        userID: user.uid,
+      }));
+    } else {
+      setDisplayName(""); // Reset if no user
+      dispatch(REMOVE_ACTIVE_USER());
+    }
+  });
+}, [dispatch, displayName]); 
 
   useEffect(() => {
     window.addEventListener('scroll', () => {
@@ -43,11 +53,12 @@ const Header = () => {
 
  const logoutUser = () => {
   signOut(auth).then(() => {
-    // toast.success('Logout Successfully')
-    window.alert('Logout Successfully');
+    toast.success('Logout Successfully')
+    // window.alert('Logout Successfully');
     navigate('/book')
   }).catch((error) => {
-    window.alert('Error logging out: ' + error.message);
+    toast.error('Error logging out: ' + error.message )
+    // window.alert('Error logging out: ' + error.message);
   });
  }
 
@@ -71,16 +82,30 @@ const Header = () => {
         </NavLink>
         {/* Nav */}
         <nav className={`${header ? 'text-primary' : 'text-white'} flex gap-x-4 font-tertiary tracking-[3px] text-[15px] items-center uppercase lg:gap-x-8`}>
-        <NavLink to='/contact' className='hover:text-accent transition'>
-            Contact Us
-          </NavLink>
+        
+        {/* <button className='btn btn-lg btn-primary mx-auto'>{btnText}</button>  */}
+
+          <ShowOnLogout>
           <NavLink to='/register' className='hover:text-accent transition'>
             Register
           </NavLink>
           <NavLink to='/login' className='hover:text-accent transition'>
             Login
           </NavLink>
+          <NavLink to='/login' className='hover:text-accent transition'>
+            Saved
+          </NavLink>
+          </ShowOnLogout>
+          <AdminOnlyRoute>
+          <NavLink to='/admin' className='btn btn-sm btn-primary mx-auto rounded'>
+            Admin
+          </NavLink>
+          </AdminOnlyRoute>
+          <NavLink to='/contact' className='hover:text-accent transition'>
+            Contact Us
+          </NavLink>
 
+          <ShowOnLogin>
           {/* Profile dropdown */}
           <Menu as="div" className="relative ml-3">
               <div>
@@ -136,6 +161,7 @@ const Header = () => {
             <NavLink to='/book' className=' text-accent hover:text-white transition'>
             {displayName || 'Guest'}
           </NavLink>
+          </ShowOnLogin>
 
         </nav>
       </div>

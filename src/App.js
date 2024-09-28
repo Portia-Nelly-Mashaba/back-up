@@ -1,6 +1,6 @@
 import React from 'react';
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 //components
 import Header from './components/Header';
@@ -33,7 +33,7 @@ const App = () => {
   
   return (
     <Router>
-      {/* <ToastContainer /> */}
+      <ToastContainer />
       <ShowNavbar>
         <Header />
       </ShowNavbar>

@@ -18,17 +18,17 @@ const slides = [
   {
     title: "Mzansi's Luxury Hotels For Vacation",
     bg: Img1,
-    btnText: 'Book Now'
+    // btnText: 'Book Now'
   },
   {
     title: "Discover Paradise",
     bg: Img2,
-    btnText: 'Explore More'
+    // btnText: 'Explore More'
   },
   {
     title: "Experience South African Grandeur",
     bg: Img3,
-    btnText: 'Check Availability'
+    // btnText: 'Check Availability'
   }
 
 ];
@@ -54,7 +54,7 @@ const HeroSlider = () => {
                 Just Enjoy and relax
               </div>
               <h1 className='text-[32px] font-primary uppercase tracking-[2px] max-w-[900px] lg:text-[50px] leading-tight mb-6'>{ title }</h1>
-              <button className='btn btn-lg btn-primary mx-auto'>{btnText}</button>
+              {/* <button className='btn btn-lg btn-primary mx-auto'>{btnText}</button> */}
             </div>
             
             <div className='absolute top-0 w-full h-full'>

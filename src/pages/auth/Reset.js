@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import displayImg from '../../assets/img/image.jpg';
+import { toast } from 'react-toastify';
 import { auth } from '../../firebase/config';
+import 'react-toastify/dist/ReactToastify.css';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { SpinnerDotted } from 'spinners-react';
 
@@ -18,11 +19,13 @@ const Reset = () => {
     sendPasswordResetEmail(auth, email)
   .then(() => {
     setLoading(false);
-    window.alert('Check your email for a reset link');
+    toast.success('Check your email for a reset link')
+    // window.alert('Check your email for a reset link');
   })
   .catch((error) => {
     setLoading(false);
-    window.alert(error.message);
+    toast.error(error.message)
+    // window.alert(error.message);
   });
   }
 
