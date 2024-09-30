@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 
 const Navbar = () => {
   return (
@@ -64,7 +65,14 @@ const Navbar = () => {
               </svg>
             </button>
             {/* Profile dropdown */}
+
             <div className="relative ml-3">
+            <a href="/admin/bookings" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Bookings</a>
+            <NavLink to='/book'>
+            <p className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">logout</p>
+            </NavLink>
+            </div>
+            {/* <div className="relative ml-3">
               <div>
                 <button
                   type="button"
@@ -77,13 +85,14 @@ const Navbar = () => {
                   <span className="sr-only">Open user menu</span>
                   <img className="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" />
                 </button>
-              </div>
+              </div> */}
+
               {/* <div className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabIndex="-1">
                 <a href="/" className="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabIndex="-1">Your Profile</a>
                 <a href="/" className="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabIndex="-1">Settings</a>
                 <a href="/" className="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabIndex="-1">Sign out</a>
-              </div> */}
-            </div>
+              </div> 
+            </div>*/}
           </div>
         </div>
       </div>
