@@ -1,7 +1,61 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { REMOVE_ACTIVE_USER, SET_ACTIVE_USER, selectUserName } from '../../../redux/slice/authSlice';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from '../../../firebase/config';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
+
+  // const userName = useSelector(selectUserName)
+  // console.log(userName); 
+
+  // Monitor currently signed-in user
+
+  const [displayName, setDisplayName] = useState('');
+  const navigate = useNavigate();
+
+
+  const dispatch = useDispatch();
+useEffect(() => {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log(user);
+      if (!user.displayName) {
+        const u1 = user.email.split('@')[0]; // Get email prefix
+        const uName = u1.charAt(0).toUpperCase() + u1.slice(1);
+        setDisplayName(uName);
+      } else {
+        setDisplayName(user.displayName);
+      }
+
+      // Dispatch the active user to Redux
+      dispatch(SET_ACTIVE_USER({
+        email: user.email,
+        userName: user.displayName ? user.displayName : displayName,
+        userID: user.uid,
+      }));
+    } else {
+      setDisplayName(""); // Reset if no user
+      dispatch(REMOVE_ACTIVE_USER());
+    }
+  });
+}, [dispatch, displayName]); 
+
+const logoutUser = () => {
+  signOut(auth).then(() => {
+    toast.success('Logout Successfully')
+    // window.alert('Logout Successfully');
+    navigate('/book')
+  }).catch((error) => {
+    toast.error('Error logging out: ' + error.message )
+    // window.alert('Error logging out: ' + error.message);
+  });
+ }
+
+
   return (
     <nav className="bg-gray-800">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -65,11 +119,11 @@ const Navbar = () => {
               </svg>
             </button>
             {/* Profile dropdown */}
-
+            <span className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"> {displayName || 'Guest'}</span>
             <div className="relative ml-3">
-            <a href="/admin/bookings" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Bookings</a>
+           
             <NavLink to='/book'>
-            <p className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">logout</p>
+            <p onClick={logoutUser} className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">logout</p>
             </NavLink>
             </div>
           </div>
