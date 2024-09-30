@@ -1,7 +1,14 @@
 
 
-import { ref, getStorage, uploadBytesResumable } from 'firebase/storage';
+import { collection, addDoc,  Timestamp } from "firebase/firestore"; 
+import { ref, getStorage, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import React, { useState } from 'react'
+import { toast } from 'react-toastify';
+import { db } from '../../../firebase/config'
+import { SpinnerDotted } from 'spinners-react';
+import { useNavigate } from "react-router-dom";
+
+
 
 
 const room_type = [
@@ -17,26 +24,36 @@ const floor = [
   { id: 3, name: '3rd Floor' },
 ]
 
+const initialState = {
+  room_no: "",
+  people: null,
+  room_type: "",
+  floor: "",
+  amount: null,
+  imageURL: "",
+  room_size: "",
+  desc: "",
+  amenities: {
+    wifi: false,
+    coffee: false,
+    parking: false,
+    bath: false,
+    swimming: false,
+    breakfast: false,
+    gym: false,
+    drinks: false,
+  },
+}
+
 const AddForm = () => {
   const [room, setRoom] = useState({
-    room_no: "",
-    people: null,
-    room_type: "",
-    floor: "",
-    amount: null,
-    imageURL: "",
-    desc: "",
-    amenities: {
-      wifi: false,
-      coffee: false,
-      parking: false,
-      bath: false,
-      swimming: false,
-      breakfast: false,
-      gym: false,
-      drinks: false,
-    },
+   ...initialState
   })
+
+  const navigate = useNavigate();
+
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -51,6 +68,24 @@ const AddForm = () => {
     const storage = getStorage()
     const storageRef = ref(storage, `room/${Date.now()}${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
+
+
+    uploadTask.on('state_changed', 
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setUploadProgress(progress)
+      }, 
+      (error) => {
+        toast.error(error.message)
+      }, 
+      () => {
+       
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setRoom({...room, imageURL: downloadURL})
+          toast.success('Image uploaded successfully.')
+        });
+      }
+    );
   };
 
   const handleCheckboxChange = (event) => {
@@ -64,13 +99,47 @@ const AddForm = () => {
     }));
   };
 
+
+
   const addRoom = (e) => {
     e.preventDefault()
-    console.log(room);
+    // console.log(room);
+    setLoading(true);
+
+    try{
+      const docRef = addDoc(collection(db, "rooms"), {
+        room_no: room.room_no,
+    people: room.people,
+    room_type: room.room_type,
+    floor: room.floor,
+    amount: room.amount,
+    imageURL: room.imageURL,
+    room_size: room.room_size,
+    desc: room.desc,
+    amenities: room.amenities,  
+    createdAt: Timestamp.now().toDate()
+      });
+      setLoading(false);
+      setUploadProgress(0)
+      setRoom({...initialState})
+
+      toast.success('Room Added Successfully.')
+
+      navigate('/admin/dashboard'); 
+    } catch(error){
+      setLoading(false);
+      toast.error(error.message)
+    }
   }
 
 
   return (
+    <>
+    {loading && (
+      <div className='h-screen fixed bottom-0 top-0 bg-black/90 w-full z-50 flex justify-center items-center'>
+        <SpinnerDotted />
+      </div>
+    )}
     <div className="flex items-center justify-center min-h-screen bg-white mt-6">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl mt-6">
         <form onSubmit={addRoom}>
@@ -169,10 +238,26 @@ const AddForm = () => {
                     </div>
                   </div>
 
+                  <div className="sm:col-span-3">
+                    <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
+                      Room Size
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        id="room_size"
+                        name="room_size"
+                        type="number"
+                        value={room.room_size}
+                        onChange={(e) => handleInputChange(e)}
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" required
+                      />
+                    </div>
+                  </div>
+
 
                   <div className="sm:col-span-3">
                     <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
-                      Room Per Night
+                      Amount Per Night
                     </label>
                     <div className="mt-2">
                       <input
@@ -201,13 +286,24 @@ const AddForm = () => {
                       onChange={(e) => handleImageChange(e)}
                       class="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-3 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
                     />
-                    <input
+
+                    {room.imageURL === '' ?  null : (
+                      <input
                       type='text' name='imageURL' value={room.imageURL} onChange={(e) => handleImageChange(e)}
-                      placeholder='image URL'
+                      placeholder='image URL' disabled
                     // required
                     />
-                  </div>
+                    )}
 
+                      { uploadProgress === 0 ? null : (
+                        <div className="w-full h-6 bg-gray-200 rounded-full dark:bg-gray-700">
+                        <div className="h-6 bg-blue-600 rounded-full dark:bg-blue-500" style={{ width: `${uploadProgress}%` }}>
+                          {uploadProgress < 100 ? `Uploading $ {uploadProgress}` : `Upload Complete ${uploadProgress}%`}
+                        </div>
+                    </div>
+                      ) }
+                    
+                  </div>
 
 
 
@@ -279,6 +375,7 @@ const AddForm = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 
