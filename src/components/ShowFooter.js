@@ -11,7 +11,9 @@ const ShowFooter = ({ children }) => {
     
     // Hide the header if the pathname is '/' or '/admin'
     if (location.pathname === '/' || location.pathname === '/admin' || location.pathname === '/login'
-        || location.pathname === '/register' || location.pathname === '/reset'
+        || location.pathname === '/register' || location.pathname === '/reset' || location.pathname === '/admin/dashboard'
+        || location.pathname === '/admin/rooms' || location.pathname === '/admin/single-room' || location.pathname === '/admin/add-room'
+        || location.pathname === '/admin/bookings' || location.pathname === '/admin/users' 
     ) {
       setShowFooter(false);
     } else {
