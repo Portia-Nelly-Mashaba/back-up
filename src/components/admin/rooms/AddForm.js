@@ -140,15 +140,38 @@ const AddForm = () => {
         <SpinnerDotted />
       </div>
     )}
+     <main>
+     <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10 mt-2">
+         {/* <!-- Breadcrumb Start --> */}
+         <div
+              class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                Add New Room
+              </h2>
+
+              <nav>
+                <ol class="flex items-center gap-2">
+                  <li>
+                    <a class="font-medium" href="dashboard">Dashboard /</a>
+                  </li>
+                  <li class="font-medium text-primary">Add Room</li>
+                </ol>
+              </nav>
+            </div>
+            {/* <!-- Breadcrumb End --> */}
     <div className="flex items-center justify-center min-h-screen bg-white mt-6">
+
+      
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl mt-6">
+   
         <form onSubmit={addRoom}>
 
           <div className="space-y-12 ">
 
 
             <div className="border-b border-gray-900/10 pb-12">
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Add New Hotel Room Information</h2>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">Hotel Room Information</h2>
 
 
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -374,7 +397,9 @@ const AddForm = () => {
 
         </form>
       </div>
+      </div>
     </div>
+    </main>
     </>
   );
 };
