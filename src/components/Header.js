@@ -7,8 +7,8 @@ import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { REMOVE_ACTIVE_USER, SET_ACTIVE_USER } from '../redux/slice/authSlice';
 import ShowOnLogin, { ShowOnLogout } from './hiddenLink/HiddenLinks';
-import { AdminOnlyLink } from './adminOnlyRoute/AdminOnlyRoute';
-// import AdminOnlyRoute, { AdminOnlyLink } from './adminOnlyRoute/AdminOnlyRoute';
+// import { AdminOnlyLink } from './adminOnlyRoute/AdminOnlyRoute';
+import AdminOnlyRoute from './adminOnlyRoute/AdminOnlyRoute';
 
 
 const Header = () => {
@@ -98,11 +98,11 @@ useEffect(() => {
           </NavLink>
           </ShowOnLogout>
 
-          <AdminOnlyLink>
+          <AdminOnlyRoute>
           <NavLink to='/admin/dashboard' className='btn btn-sm btn-primary mx-auto rounded'>
             Admin
           </NavLink>
-          </AdminOnlyLink>
+          </AdminOnlyRoute>
 
           <NavLink to='/contact' className='hover:text-accent transition'>
             Contact Us
