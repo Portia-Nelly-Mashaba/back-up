@@ -1,7 +1,11 @@
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { collection, deleteDoc, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
+import { SpinnerDotted } from 'spinners-react';
 import { toast } from 'react-toastify';
-import { db } from '../../../firebase/config';
+import { db, storage } from '../../../firebase/config';
+import { deleteObject, ref } from 'firebase/storage';
+import Notiflix from 'notiflix';
+import { useNavigate } from 'react-router-dom';
 
 const SingleRoom = () => {
   const [rooms, setRooms] = useState([]);
@@ -36,8 +40,48 @@ const SingleRoom = () => {
     }
   };
 
+  const navigate = useNavigate()
+
+  const confirmDelete = (id, imageURL) => {
+    Notiflix.Confirm.show(
+      'Delete Room',
+      'You are about to delete this room?',
+      'Delete',
+      'Cancel',
+      function okCb() {
+        deleteRoom(id, imageURL)
+      },
+      function cancelCb() {
+        navigate(-1)
+      },
+      {
+        width: '320px',
+        borderRadius: '8px',
+        // etc...
+      },
+    );
+  }
+
+  const deleteRoom = async(id, imageURL) =>{
+    try{
+      await deleteDoc(doc(db, "rooms", id));
+
+      const storageRef = ref(storage, imageURL);
+      await deleteObject(storageRef)
+      toast.success('Room Deleted Successfully.')
+
+    }catch(error){
+      toast.error(error.message)
+    }
+  };
+
   return (
     <>
+    {loading && (
+        <div className='h-screen fixed bottom-0 top-0 bg-black/90 w-full z-50 flex justify-center items-center'>
+          <SpinnerDotted />
+        </div>
+      )}
       <main className='bg-white'>
         <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10 mt-2">
           {/* Breadcrumb Start */}
@@ -47,11 +91,11 @@ const SingleRoom = () => {
             </h2>
 
             <nav>
-              <ol className="flex items-center gap-2">
+              <ol class="flex items-center gap-2">
                 <li>
-                  <a href='/admin/add-room' className="btn rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600">Add Room</a>
+                  <a class="font-medium" href="dashboard">Dashboard /</a>
                 </li>
-
+                <li class="font-medium text-primary text-gray-600">Update Rooms</li>
               </ol>
             </nav>
           </div>
@@ -131,6 +175,7 @@ const SingleRoom = () => {
                                 viewBox="0 0 18 18"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
+                                onClick={() => (confirmDelete(id, imageURL))}
                               >
                                 <path
                                   d="M13.7535 2.47502H11.5879V1.9969C11.5879 1.15315 10.9129 0.478149 10.0691 0.478149H7.90352C7.05977 0.478149 6.38477 1.15315 6.38477 1.9969V2.47502H4.21914C3.40352 2.47502 2.72852 3.15002 2.72852 3.96565V4.8094C2.72852 5.42815 3.09414 5.9344 3.62852 6.1594L4.07852 15.4688C4.13477 16.6219 5.09102 17.5219 6.24414 17.5219H11.7004C12.8535 17.5219 13.8098 16.6219 13.866 15.4688L14.3441 6.13127C14.8785 5.90627 15.2441 5.3719 15.2441 4.78127V3.93752C15.2441 3.15002 14.5691 2.47502 13.7535 2.47502ZM7.67852 1.9969C7.67852 1.85627 7.79102 1.74377 7.93164 1.74377H10.0973C10.2379 1.74377 10.3504 1.85627 10.3504 1.9969V2.47502H7.70664V1.9969H7.67852ZM4.02227 3.96565C4.02227 3.85315 4.10664 3.74065 4.24727 3.74065H13.7535C13.866 3.74065 13.9785 3.82502 13.9785 3.96565V4.8094C13.9785 4.9219 13.8941 5.0344 13.7535 5.0344H4.24727C4.13477 5.0344 4.02227 4.95002 4.02227 4.8094V3.96565ZM11.7285 16.2563H6.27227C5.79414 16.2563 5.40039 15.8906 5.37227 15.3844L4.95039 6.2719H13.0785L12.6566 15.3844C12.6004 15.8625 12.2066 16.2563 11.7285 16.2563Z"

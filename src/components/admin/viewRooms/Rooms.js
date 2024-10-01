@@ -1,5 +1,6 @@
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
+import { SpinnerDotted } from 'spinners-react';
 import { toast } from 'react-toastify';
 import { db } from '../../../firebase/config';
 
@@ -38,6 +39,11 @@ const Rooms = () => {
 
   return (
     <>
+    {loading && (
+        <div className='h-screen fixed bottom-0 top-0 bg-black/90 w-full z-50 flex justify-center items-center'>
+          <SpinnerDotted />
+        </div>
+      )}
       <main className='bg-white'>
         <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10 mt-2">
           {/* Breadcrumb Start */}
