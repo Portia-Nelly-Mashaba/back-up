@@ -8,12 +8,15 @@ const ShowNavbar = ({ children }) => {
 
   useEffect(() => {
     console.log('Current location:', location);
+
+    const hotelRoomWithIdRegex = /^\/admin\/hotel-room\/[A-Za-z0-9]+$/;
     
     // Hide the header if the pathname is '/' or '/admin'
     if (location.pathname === '/' || location.pathname === '/admin' || location.pathname === '/login'
         || location.pathname === '/register' || location.pathname === '/reset' || location.pathname === '/admin/dashboard'
         || location.pathname === '/admin/rooms' || location.pathname === '/admin/single-room' || location.pathname === '/admin/add-room'
-        || location.pathname === '/admin/bookings' || location.pathname === '/admin/users' 
+        || location.pathname === '/admin/bookings' || location.pathname === '/admin/users' || location.pathname === '/admin/hotel-room/ADD'
+        || location.pathname === '/admin/hotel-room' || hotelRoomWithIdRegex.test(location.pathname) 
     ) {
       setShowHeader(false);
     } else {

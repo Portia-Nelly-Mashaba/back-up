@@ -5,11 +5,20 @@ import { toast } from 'react-toastify';
 import { db, storage } from '../../../firebase/config';
 import { deleteObject, ref } from 'firebase/storage';
 import Notiflix from 'notiflix';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { STORE_ROOMS } from '../../../redux/slice/roomSlice';
+
+
+
+
 
 const SingleRoom = () => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(false);
+
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getRooms()
@@ -29,11 +38,17 @@ const SingleRoom = () => {
           id: doc.id,
           ...doc.data()
         }));
+        // 
         console.log(allRooms);
         setRooms(allRooms);
         setLoading(false)
+        dispatch(
+          STORE_ROOMS({
+            rooms: allRooms,
+          }));
       });
 
+      
     } catch (error) {
       setLoading(false)
       toast.error(error.message)
@@ -74,6 +89,8 @@ const SingleRoom = () => {
       toast.error(error.message)
     }
   };
+
+
 
   return (
     <>
@@ -196,6 +213,7 @@ const SingleRoom = () => {
                               </svg>
                             </button>
                             &nbsp;
+                            <Link to={`/admin/hotel-room/${id}`}>
                             <button class="hover:text-primary">
                               <svg
                                 class="fill-current"
@@ -204,6 +222,7 @@ const SingleRoom = () => {
                                 viewBox="0 0 18 18"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
+                                
                               >
                                 
                                 <path
@@ -213,6 +232,8 @@ const SingleRoom = () => {
 
                               </svg>
                             </button>
+                            </Link>
+                            
                           </div>
                         </td>
                       </tr>

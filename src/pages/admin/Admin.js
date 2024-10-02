@@ -7,6 +7,7 @@ import SingleRoom from '../../components/admin/viewRooms/SingleRoom';
 import AddRoom from '../../components/admin/rooms/AddRoom';
 import Booking from '../../components/admin/bookings/Booking';
 import ViewUsers from '../../components/admin/users/ViewUsers';
+import AddForm from '../../components/admin/rooms/AddForm';
 
 
 
@@ -24,6 +25,7 @@ const Admin = () => {
         <Route path='add-room' element={<AddRoom />}/>
         <Route path='bookings' element={<Booking />}/>
         <Route path='users' element={<ViewUsers />}/>
+        <Route path='hotel-room/:id' element={<AddForm/>} />
       </Routes>
     </div>
   

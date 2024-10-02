@@ -55,7 +55,7 @@ const Rooms = () => {
             <nav>
               <ol className="flex items-center gap-2">
                 <li>
-                  <a href='/admin/add-room' className="btn rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600">Add Room</a>
+                  <a href='hotel-room/ADD' className="btn rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600">Add Room</a>
                 </li>
 
               </ol>

@@ -6,9 +6,9 @@ import React, { useState } from 'react'
 import { toast } from 'react-toastify';
 import { db } from '../../../firebase/config'
 import { SpinnerDotted } from 'spinners-react';
-import { useNavigate } from "react-router-dom";
-
-
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectRooms } from "../../../redux/slice/roomSlice";
 
 
 
@@ -52,15 +52,33 @@ const initialState = {
 
 
 const AddForm = () => {
+
+  // edit code
+  const { id } = useParams()
+  // const rooms = useSelector(selectRooms);
+  // const roomEdit = rooms.find((item) => item.id === id)
+  // console.log(roomEdit)
+//end here
+
   const [formState, setFormState] = useState(initialState);
   const [room, setRoom] = useState({
     ...initialState
   })
 
-  const navigate = useNavigate();
 
   const [uploadProgress, setUploadProgress] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+
+  function detectForm(id, f1, f2) {
+    if (id === 'ADD') {
+      return f1;
+    }
+    return f2
+  }
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -149,6 +167,17 @@ const AddForm = () => {
     }
   }
 
+  const editRoom = (e) => {
+    e.preventDefault()
+    setLoading(true);
+    try {
+
+    } catch (error) {
+      setLoading(false);
+      toast.error(error.message)
+    }
+  }
+
 
   return (
     <>
@@ -163,8 +192,8 @@ const AddForm = () => {
           <div
             class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
           >
-            <h2 class="text-title-md2 font-bold text-black dark:text-white">
-              Add New Room
+            <h2 class="text-title-md2 font-bold text-black dark:text-black">
+              {detectForm(id, 'Add New Room', 'Edit Room')}
             </h2>
 
             <nav>
@@ -172,7 +201,10 @@ const AddForm = () => {
                 <li>
                   <a class="font-medium" href="dashboard">Dashboard /</a>
                 </li>
-                <li class="font-medium text-primary">Add Room</li>
+                <li>
+                  <a class="font-medium" href="add-room"> View Rooms /</a>
+                </li>
+                <li class="font-medium text-gray-600">{detectForm(id, 'Add New Room', 'Edit Room')}</li>
               </ol>
             </nav>
           </div>
@@ -182,13 +214,13 @@ const AddForm = () => {
 
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl mt-6">
 
-              <form onSubmit={addRoom}>
+              <form onSubmit={detectForm(id, addRoom, editRoom)}>
 
                 <div className="space-y-12 ">
 
 
                   <div className="border-b border-gray-900/10 pb-12">
-                    <h2 className="text-base font-semibold leading-7 text-gray-900">Hotel Room Information</h2>
+                    <h2 className="text-base font-semibold leading-7 text-gray-900">{detectForm(id, 'Add New', 'Edit')} Room Information</h2>
 
 
                     <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -220,7 +252,7 @@ const AddForm = () => {
                             type="number"
                             value={room.people}
                             onChange={(e) => handleInputChange(e)}
-                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" 
+                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             required
                           />
                         </div>
@@ -236,7 +268,7 @@ const AddForm = () => {
                             name="room_type"
                             value={room.room_type}
                             onChange={(e) => handleInputChange(e)}
-                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6" 
+                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                             required
                           >
 
@@ -264,7 +296,7 @@ const AddForm = () => {
                             name="floor"
                             value={room.floor}
                             onChange={(e) => handleInputChange(e)}
-                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6" 
+                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                             required
                           >
                             <option disabled>--Select Floor--</option>
@@ -365,7 +397,7 @@ const AddForm = () => {
                       </div>
 
                       <div className="col-span-full mt-1">
-                      <label className="inline-flex items-center mb-5 cursor-pointer">
+                        <label className="inline-flex items-center mb-5 cursor-pointer">
                           <input
                             type="checkbox"
                             checked={room.isAvailable}
@@ -421,7 +453,7 @@ const AddForm = () => {
                     type="submit"
                     className="rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600"
                   >
-                    Save
+                    {detectForm(id, 'Save', 'Update')}
                   </button>
 
                 </div>
