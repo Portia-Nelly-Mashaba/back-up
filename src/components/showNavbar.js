@@ -16,7 +16,7 @@ const ShowNavbar = ({ children }) => {
         || location.pathname === '/register' || location.pathname === '/reset' || location.pathname === '/admin/dashboard'
         || location.pathname === '/admin/rooms' || location.pathname === '/admin/single-room' || location.pathname === '/admin/add-room'
         || location.pathname === '/admin/bookings' || location.pathname === '/admin/users' || location.pathname === '/admin/hotel-room/ADD'
-        || location.pathname === '/admin/hotel-room' || hotelRoomWithIdRegex.test(location.pathname) 
+        || location.pathname === '/admin/hotel-room' || hotelRoomWithIdRegex.test(location.pathname) || location.pathname === '/booking-summary'
     ) {
       setShowHeader(false);
     } else {

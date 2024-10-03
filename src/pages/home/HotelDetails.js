@@ -1,30 +1,52 @@
 
 
-import React, { useContext } from 'react';
-import { useParams  } from 'react-router-dom';
-import { FaCheck } from 'react-icons/fa';
-import { HotelContext } from '../../context/HotelContext.js';
+import React, {  useEffect, useState } from 'react';
+import { NavLink, useParams  } from 'react-router-dom';
+import { FaBath, FaCheck, FaCoffee, FaDumbbell, FaMugHot, FaParking, FaSwimmingPool, FaWifi } from 'react-icons/fa';
 
 import AdultsDropdown from '../../components/AdultsDropdown.js';
 import KidsDropdown from '../../components/KidsDropdown.js';
 import CheckIn from '../../components/CheckIn.js';
 import CheckOut from '../../components/CheckOut.js';
 import ScrollToTop from '../../components/ScrollToTop.js';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase/config.js';
 
 
 const HotelDetails = () => {
-  const { hotels} = useContext(HotelContext)
+  const [room, setRoom] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { id } = useParams();
-  //console.log(id);
+  console.log(id);
 
-  //get hotel
-  const hotel = hotels.find((hotel) =>{
-    return hotel.id === Number(id);
-  })
-  //console.log(hotel);
+  useEffect(() => {
+    const fetchRoom = async () => {
+      try {
+        const roomDoc = doc(db, 'rooms', id); // Fetch room by ID
+        const roomData = await getDoc(roomDoc);
+        if (roomData.exists()) {
+          console.log('Room data:', roomData.data());
+          setRoom(roomData.data());
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching room data: ', error);
+      }
+    };
+    fetchRoom();
+  }, [id]);
 
-  //destructure hotel
-  const { name, description, facilities, imageLg, price } = hotel;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!room) {
+    return <div>Room not found.</div>;
+  }
+
+  // Destructure hotel details
+  const { imageURL, room_type, desc, amenities, amount } = room;
+
 
   return (
     <section>
@@ -34,16 +56,16 @@ const HotelDetails = () => {
         {/* overlay */}
         <div className='absolute w-full h-full bg-black/70'></div>
         {/* title */}
-        <h1 className='text-6xl text-white z-20 font-primary text-center'>{ name } Details</h1>
+        <h1 className='text-6xl text-white z-20 font-primary text-center'>{ room_type } Details</h1>
       </div>
       
       <div className='container mx-auto'>
         <div className='flex flex-col lg:flex-row h-full py-24'>
           {/* left */}
           <div className='w-full h-full lg:w-[60%] px-6'>
-            <h2 className='h2'>{name}</h2>
-            <p className='mb-8'>{description}</p>
-            <img className='mb-8' src={imageLg} alt='' />
+            <h2 className='h2'>{room_type}</h2>
+            <p className='mb-8'>{desc}</p>
+            <img className='mb-8' src={imageURL} alt='' />
 
             {/* facilities */}
             <div className='mt-12'>
@@ -55,15 +77,54 @@ const HotelDetails = () => {
               </p>
               <div className='grid grid-cols-3 gap-6 mb-12'>
                  {/* grid */}
-              { facilities.map((item, index) => {
-                const { name, icon } = item;
-                return (
-                  <div className='flex items-center gap-x-3 flex-1' key={ index }>
-                    <div className='text-2xl text-accent'>{ icon }</div>
-                    <div className='text-base'>{ name }</div>
-                  </div>
-                );
-              })}
+                 {Object.entries(amenities).map(([key, value], index) => {
+  if (value) { // Only show the amenity if it's true
+    let icon;
+    let name;
+
+    // Assign icons and names based on the key (amenity name)
+    switch (key) {
+      case 'bath':
+        icon = <FaBath />; // Example icon for bath
+        name = 'Bath';
+        break;
+      case 'breakfast':
+        icon = <FaCoffee />; // Example icon for breakfast
+        name = 'Breakfast';
+        break;
+      case 'coffee':
+        icon = <FaMugHot />; // Example icon for coffee
+        name = 'Coffee';
+        break;
+      case 'gym':
+        icon = <FaDumbbell />; // Example icon for gym
+        name = 'Gym';
+        break;
+      case 'parking':
+        icon = <FaParking />; // Example icon for parking
+        name = 'Parking';
+        break;
+      case 'swimming':
+        icon = <FaSwimmingPool />; // Example icon for swimming pool
+        name = 'Swimming Pool';
+        break;
+      case 'wifi':
+        icon = <FaWifi />; // Example icon for Wi-Fi
+        name = 'Wi-Fi';
+        break;
+      default:
+        return null; // Skip if no matching case
+    }
+
+    return (
+      <div className='flex items-center gap-x-3 flex-1' key={index}>
+        <div className='text-2xl text-accent'>{icon}</div>
+        <div className='text-base'>{name}</div>
+      </div>
+    );
+  }
+  return null; // Skip if the value is false
+})}
               <div>
             </div>
           </div>
@@ -89,7 +150,9 @@ const HotelDetails = () => {
                     <KidsDropdown />
                   </div>
                 </div>
-                <button className='btn btn-lg btn-primary w-full'>Book Now For R{ price }</button>
+                <NavLink to='/booking-summary'>
+                <button className='btn btn-lg btn-primary w-full'>Book Now For R{ amount }</button>
+                </NavLink>
               </div>
               {/* rules */}
               <div>
@@ -127,3 +190,6 @@ const HotelDetails = () => {
 
 
 export default HotelDetails;
+
+
+

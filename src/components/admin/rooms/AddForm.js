@@ -7,8 +7,7 @@ import { toast } from 'react-toastify';
 import { db } from '../../../firebase/config'
 import { SpinnerDotted } from 'spinners-react';
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { selectRooms } from "../../../redux/slice/roomSlice";
+
 
 
 

@@ -26,6 +26,7 @@ import Reset from './pages/auth/Reset';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ShowFooter from './components/ShowFooter';
 import AdminOnlyRoute from './components/adminOnlyRoute/AdminOnlyRoute';
+import BookingSummary from './pages/home/BookingSummary';
 
 
 
@@ -50,6 +51,7 @@ const App = () => {
         <Route path="/hotel/:id" element={<HotelDetails />} />
         <Route path="/saved" element={<Saved />} />
         <Route path="/booking/history" element={<BookingHistory />} />
+        <Route path="/booking-summary" element={<BookingSummary />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/*" element={ <AdminOnlyRoute> <Admin /> </AdminOnlyRoute>} />
         {/* <Route path="*" element={<Error />} /> */}

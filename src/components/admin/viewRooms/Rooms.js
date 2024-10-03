@@ -26,7 +26,7 @@ const Rooms = () => {
           id: doc.id,
           ...doc.data()
         }));
-        console.log(allRooms);
+        // console.log(allRooms);
         setRooms(allRooms);
         setLoading(false)
       });
