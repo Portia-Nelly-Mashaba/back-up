@@ -34,6 +34,15 @@ const Hotels = () => {
     }
   };
 
+  // //Pagination states
+  // const [currentPage, setCurrentPage] = useState(1)
+  // const [roomsPerPage, setPerRoomPage] = useState(1)
+  // //Get current rooms
+  // const indexOfLastRoom = currentPage * roomsPerPage;
+  // const indexOfFirstRoom = indexOfLastRoom - roomsPerPage;
+  // const currentRooms = rooms.slice(indexOfFirstRoom, indexOfLastRoom)
+
+
   return (
     <section className='py-24'>
       {loading && (

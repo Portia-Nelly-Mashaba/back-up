@@ -4,41 +4,44 @@ import 'react-datepicker/dist/react-datepicker.css';
 import '../datepicker.css';
 import { BsCalendar } from 'react-icons/bs';
 
-const CheckIn = () => {
+const CheckIn = ({ onChange }) => {
   const [startDate, setStartDate] = useState(null); // Default value
+
+  const handleChange = (date) => {
+    setStartDate(date);
+    onChange(date); // Call the onChange prop
+  };
 
   return (
     <div className='relative flex items-center justify-end h-full'>
       <div className='absolute z-10 pr-8'>
-        <BsCalendar className='text-accent text-base'/>
+        <BsCalendar className='text-accent text-base' />
       </div>
-      <DatePicker 
-        className='w-full h-full' 
-        selected={startDate} 
+      <DatePicker
+        className='w-full h-full'
+        selected={startDate}
         placeholderText='Check In'
-        onChange={(date) => setStartDate(date)} />
+        onChange={handleChange} />
     </div>
   );
 };
 
 export default CheckIn;
 
+
 // import React, { useState } from 'react';
-// //datepicker
 // import DatePicker from 'react-datepicker';
 // import 'react-datepicker/dist/react-datepicker.css';
 // import '../datepicker.css';
-// import { BsCalendar } from 'react-icons/bs'
+// import { BsCalendar } from 'react-icons/bs';
 
 // const CheckIn = () => {
-//   const [startDate, setStartDate] = useState(false);
+//   const [startDate, setStartDate] = useState(null); // Default value
+
 //   return (
 //     <div className='relative flex items-center justify-end h-full'>
-//       {/* calendar icon */}
 //       <div className='absolute z-10 pr-8'>
-//         <div>
-//           <BsCalendar className='text-accent text-base'/>
-//         </div>
+//         <BsCalendar className='text-accent text-base'/>
 //       </div>
 //       <DatePicker 
 //         className='w-full h-full' 
@@ -46,7 +49,8 @@ export default CheckIn;
 //         placeholderText='Check In'
 //         onChange={(date) => setStartDate(date)} />
 //     </div>
-//   )
+//   );
 // };
 
 // export default CheckIn;
+

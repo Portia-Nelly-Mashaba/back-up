@@ -1,60 +1,243 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import image from '../../src/assets/img/room.jpg';
+import React, { useEffect, useState } from "react";
+import {
+  Link,
+  Navigate,
+  NavLink,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../firebase/config";
+import { SpinnerDotted } from "spinners-react";
+import { onAuthStateChanged } from "firebase/auth";
 
 const Summary = () => {
-    const navigate = useNavigate();
-    return (
-        <section className='mt-16'>
-            <div className="relative flex justify-center items-center">
-                <div className="mb-10 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-                    <div className="border-b border-stroke px-4 py-4 dark:border-strokedark sm:px-6 xl:px-9">
-                        <h3 className="text-2xl font-medium text-black dark:text-white">Booking Details</h3>
-                    </div>
-                    <div className="p-4 sm:p-6 xl:p-9">
-                        <div className="-mx-4 flex flex-wrap items-start"> {/* Added 'items-start' */}
-                            <div className="flex-shrink-0"> {/* Prevents image from shrinking */}
-                                <img src={image} alt="Room" style={{ height: '400px', width: '300px' }} />
-                            </div>
-                            <div className="w-full px-4 xl:w-6/12">
-                                <div className="mr-10 text-right md:ml-auto">
-                                    <div className="ml-auto sm:w-1/2">
-                                        <p className="mb-4 flex justify-between font-medium text-black dark:text-white">
-                                            <span>Subtotal</span>
-                                            <span>$120.00</span>
-                                        </p>
-                                        <p className="mb-4 flex justify-between font-medium text-black dark:text-white">
-                                            <span>Shipping Cost (+)</span>
-                                            <span>$10.00</span>
-                                        </p>
-                                        <p className=" mb-4 mt-2 flex justify-between border-t border-stroke pt-6 font-medium text-black dark:border-strokedark dark:text-white">
-                                            <span>Total Payable</span>
-                                            <span>$130.00</span>
-                                        </p>
-                                    </div>
-                                    
-                                    
-                                </div>
-                       
+  const { state } = useLocation(); // Get the passed state
+  const { id } = useParams();
+  const navigate = useNavigate(); // Use for navigation
+  const [room, setRoom] = useState(state || null); // Initialize with passed state
+  const [loading, setLoading] = useState(!state); // Set loading based on passed state
+  const [user, setUser] = useState(null); // Track user authentication state
 
-                        <div className="border-t border-stroke px-4 py-4 flex justify-between items-center">
-                        <button
-                            onClick={() => navigate(-1)}
-                            className="flex items-center justify-center rounded border border-primary px-8 py-2.5 text-center font-medium text-primary hover:opacity-90"
-                        >
-                            Back
-                        </button>
-                        <Link to='/' className='btn btn-secondary btn-sm max-w-[240px]'>
-                            Pay Now
-                        </Link>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  useEffect(() => {
+    // Check if user is logged in
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user); // User is logged in
+      } else {
+        navigate("/login"); // User is not logged in, redirect to login
+      }
+    });
+
+    return () => unsubscribe(); // Clean up the listener on unmount
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchRoom = async () => {
+      if (!state) {
+        // Only fetch if state is not provided
+        try {
+          const roomDoc = doc(db, "rooms", id); // Fetch room by ID
+          const roomData = await getDoc(roomDoc);
+          if (roomData.exists()) {
+            console.log("Room data:", roomData.data());
+            setRoom(roomData.data());
+          }
+          setLoading(false);
+        } catch (error) {
+          console.error("Error fetching room data: ", error);
+        }
+      }
+    };
+    fetchRoom();
+  }, [id, state]);
+
+  // Check if room exists before trying to destructure its properties
+  if (!state && loading) {
+    return (
+      <div className="h-screen fixed bottom-0 top-0 bg-black/90 w-full z-50 flex justify-center items-center">
+        <SpinnerDotted />
+      </div>
     );
+  }
+  if (!room) {
+    return <p className="text-lg text-red-500">No room details available.</p>;
+  }
+
+  // Destructure properties from room
+  const { imageURL, roomType, description, roomNo, amount } = room;
+  console.log("Room data:", room);
+
+  // If state was passed, use its properties
+  const {
+    numberOfNights,
+    totalAmount,
+    checkInDate,
+    checkOutDate,
+    adults,
+    kids,
+  } = state;
+  console.log("State data:", state);
+
+  // Format dates (assuming checkInDate and checkOutDate are in Date format)
+  const formattedCheckInDate = new Date(checkInDate).toLocaleDateString();
+  const formattedCheckOutDate = new Date(checkOutDate).toLocaleDateString();
+
+  // Handle payment button click
+  const handlePayNow = () => {
+    if (!user) {
+      // If the user is not logged in, redirect to login page
+      Navigate("/login");
+    } else {
+      // Proceed with payment (you can integrate payment logic here)
+      console.log("Proceeding to payment...");
+    }
+  };
+
+  return (
+    <section>
+      <div className="py-14 px-4 md:px-6 2xl:px-20 2xl:container 2xl:mx-auto">
+        <div className="flex justify-start item-start space-y-2 flex-col">
+          <h1 className="text-3xl dark:text-white lg:text-4xl font-semibold leading-7 lg:leading-9 text-gray-800">
+            Booking Summary
+          </h1>
+          <p className="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">
+            <Link to={"/"}> Edit</Link>
+          </p>
+        </div>
+
+        <div className="mt-10 flex flex-col xl:flex-row jusitfy-center items-stretch w-full xl:space-x-8 space-y-4 md:space-y-6 xl:space-y-0">
+          <div className="flex flex-col justify-start items-start w-full space-y-4 md:space-y-6 xl:space-y-8">
+            <div className="flex flex-col justify-start items-start dark:bg-gray-800 bg-gray-50 px-4 py-4 md:py-6 md:p-6 xl:p-8 w-full">
+              <p className="text-lg md:text-xl dark:text-white font-semibold leading-6 xl:leading-5 text-gray-800">
+                {roomType}
+              </p>
+              <p className="text-base mt-4 dark:text-gray-300 leading-4 text-gray-600">
+                {description}
+              </p>
+              <div className="mt-4 md:mt-6 flex flex-col md:flex-row justify-start items-start md:items-center md:space-x-6 xl:space-x-8 w-full">
+                <div className="max-w-lg text-center">
+                  <img
+                    className="h-auto max-w-full rounded-lg"
+                    src={imageURL}
+                    alt={roomType}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-gray-50 dark:bg-gray-800 space-y-6">
+                <h3 className="text-xl dark:text-white font-semibold leading-5 text-gray-800">
+                  Booking Details
+                </h3>
+                <div className="flex justify-center items-center w-full space-y-4 flex-col border-gray-200 border-b pb-4">
+                  <div className="flex justify-between w-full">
+                    <p className="text-base dark:text-white leading-4 text-gray-800">
+                      Room Type
+                    </p>
+                    <p claclassName="text-base dark:text-gray-300 leading-4 text-gray-600">
+                      {roomType}
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center w-full">
+                    <p className="text-base dark:text-white leading-4 text-gray-800">
+                      Check-In Date{" "}
+                    </p>
+                    <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
+                      {formattedCheckInDate}
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center w-full">
+                    <p className="text-base dark:text-white leading-4 text-gray-800">
+                      Check-Out Date
+                    </p>
+                    <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
+                      {formattedCheckOutDate}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center w-full">
+                  <p className="text-base dark:text-white font-semibold leading-4 text-gray-800">
+                    Room No
+                  </p>
+                  <p className="text-base dark:text-gray-300 font-semibold leading-4 text-gray-600">
+                    {roomNo}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="bg-gray-50 dark:bg-gray-800 w-full xl:w-96 flex justify-between items-center md:items-start px-4 py-6 md:p-6 xl:p-8 flex-col">
+            <div className="flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-gray-50 dark:bg-gray-800 space-y-6">
+              <h3 className="text-xl dark:text-white font-semibold leading-5 text-gray-800">
+                Amount{" "}
+              </h3>
+              <div className="flex justify-center items-center w-full space-y-4 flex-col border-gray-200 border-b pb-4">
+                <div className="flex justify-between w-full">
+                  <p className="text-base dark:text-white leading-4 text-gray-800">
+                    Total Nights
+                  </p>
+                  <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
+                    {numberOfNights}
+                  </p>
+                </div>
+                <div className="flex justify-between items-center w-full">
+                  <p className="text-base dark:text-white leading-4 text-gray-800">
+                    Rent Per Night
+                  </p>
+                  <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
+                    R{amount}
+                  </p>
+                </div>
+                <div className="flex justify-between items-center w-full">
+                  <p className="text-base dark:text-white leading-4 text-gray-800">
+                    No of Adults
+                  </p>
+                  <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
+                    {adults}
+                  </p>
+                </div>
+                <div className="flex justify-between items-center w-full">
+                  <p className="text-base dark:text-white leading-4 text-gray-800">
+                    No of Kids
+                  </p>
+                  <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
+                    {kids}
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-between items-center w-full mb-10">
+                <p className="text-base dark:text-white font-semibold leading-4 text-gray-800">
+                  Total Amount
+                </p>
+                <p className="text-base dark:text-gray-300 font-semibold leading-4 text-gray-600">
+                  R{totalAmount}
+                </p>
+              </div>
+              {/* <div className="flex w-full justify-center items-center md:justify-start md:items-start">
+            <button className="mt-6 md:mt-0 dark:border-white dark:hover:bg-gray-900 dark:bg-transparent dark:text-white py-5 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 border border-gray-800 font-medium w-96 2xl:w-full text-base font-medium leading-4 text-gray-800">Edit Details</button>
+          </div> */}
+              <div class="w-full flex justify-center items-center">
+                <NavLink
+                  to={`/checkout/${id}`}
+                  className="w-96 md:w-full"
+                  onClick={handlePayNow}
+                >
+                  <button
+                    className="hover:bg-black dark:bg-white dark:text-gray-800 dark:hover:bg-gray-100 
+               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 py-5 
+               w-full bg-gray-800 text-base font-medium leading-4 text-white"
+                  >
+                    Pay Now
+                  </button>
+                </NavLink>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default Summary;

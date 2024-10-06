@@ -1,7 +1,5 @@
-
-
-import React, {  useEffect, useState } from 'react';
-import { NavLink, useParams  } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { NavLink, useParams } from 'react-router-dom';
 import { FaBath, FaCheck, FaCoffee, FaDumbbell, FaMugHot, FaParking, FaSwimmingPool, FaWifi } from 'react-icons/fa';
 
 import AdultsDropdown from '../../components/AdultsDropdown.js';
@@ -12,12 +10,14 @@ import ScrollToTop from '../../components/ScrollToTop.js';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/config.js';
 
-
 const HotelDetails = () => {
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [checkInDate, setCheckInDate] = useState(null);
+  const [checkOutDate, setCheckOutDate] = useState(null);
+  const [numberOfAdults, setNumberOfAdults] = useState(1); // Default value
+  const [numberOfKids, setNumberOfKids] = useState(0); // Default value
   const { id } = useParams();
-  console.log(id);
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -45,7 +45,37 @@ const HotelDetails = () => {
   }
 
   // Destructure hotel details
-  const { imageURL, room_type, desc, amenities, amount } = room;
+  const { imageURL, room_type, desc, amenities, amount, people, room_no } = room;
+
+  // Calculate the number of nights
+  const calculateNumberOfNights = (checkIn, checkOut) => {
+    if (checkIn && checkOut) {
+      const checkInDate = new Date(checkIn);
+      const checkOutDate = new Date(checkOut);
+      const timeDifference = checkOutDate - checkInDate;
+      return Math.max(0, Math.ceil(timeDifference / (1000 * 3600 * 24))); // Days between dates
+    }
+    return 0;
+  };
+
+  // Calculate number of nights
+  const numberOfNights = calculateNumberOfNights(checkInDate, checkOutDate);
+
+  // Calculate total based on the number of adults and kids
+  const baseRoomRate = amount * numberOfNights; // Base cost for the room for the nights booked
+  const extraPersonFee = (numberOfAdults + numberOfKids > people) ? (numberOfAdults + numberOfKids - people) * 20 : 0; // Assuming $20 for each extra person
+  const serviceCharge = 30; // Fixed service charge
+  const totalBeforeTax = baseRoomRate + extraPersonFee + serviceCharge; // Total before tax
+
+  // Assuming a tax rate of 10%
+  const taxRate = 0.10;
+  const taxAmount = totalBeforeTax * taxRate;
+
+  // Total amount to pay
+  const totalAmount = totalBeforeTax + taxAmount;
+
+  // Check if total people do not exceed room capacity
+  const isValidReservation = (numberOfAdults + numberOfKids) <= people;
 
 
   return (
@@ -133,27 +163,51 @@ const HotelDetails = () => {
           </div>
           {/* right */}
           <div className='w-full h-full lg:w-[40%]'>
-            {/* reservation */}
-              <div className='py-8 px-6 bg-accent/25 mb-12'>
-                <div className='flex flex-col space-y-4 mb-4'>
-                  <h3>Your Reservation</h3>
-                  <div className='h-[60px]'>
-                    <CheckIn />
-                  </div>
-                  <div className='h-[60px]'>
-                    <CheckOut />
-                  </div>
-                  <div className='h-[60px]'>
-                    <AdultsDropdown />
-                  </div>
-                  <div className='h-[60px]'> 
-                    <KidsDropdown />
-                  </div>
-                </div>
-                <NavLink to='/booking-summary'>
-                <button className='btn btn-lg btn-primary w-full'>Book Now For R{ amount }</button>
-                </NavLink>
-              </div>
+  {/* reservation */}
+  <div className='py-8 px-6 bg-accent/25 mb-12'>
+    <div className='flex flex-col space-y-4 mb-4'>
+      <h3>Your Reservation</h3>
+      <div className='h-[60px]'>
+        <CheckIn onChange={(date) => setCheckInDate(date)} />
+      </div>
+      <div className='h-[60px]'>
+        <CheckOut onChange={(date) => setCheckOutDate(date)} />
+      </div>
+      <div className='h-[60px]'>
+        <AdultsDropdown onChange={(count) => setNumberOfAdults(count)} />
+      </div>
+      <div className='h-[60px]'>
+        <KidsDropdown onChange={(count) => setNumberOfKids(parseInt(count.charAt(0)))} />
+      </div>
+
+      <p>Total: ${totalAmount}</p>
+
+      {/* Only show button if both check-in and check-out dates are provided */}
+      {checkInDate && checkOutDate ? (
+        isValidReservation ? (
+          <NavLink to={`/booking-summary/${id}`} state={{
+            roomType: room_type,
+            description: desc,
+            imageURL: imageURL,
+            amount: amount,          // Make sure 'amount' is correctly retrieved
+    roomNo: room_no, 
+            numberOfNights,
+            totalAmount,
+            checkInDate,
+            checkOutDate,
+            adults: numberOfAdults,
+            kids: numberOfKids
+          }}>
+            <button className='btn btn-lg btn-primary w-full mt-4'>Proceed to Summary</button>
+          </NavLink>
+        ) : (
+          <p className="text-red-500">Total number of guests exceeds room capacity!</p>
+        )
+      ) : (
+        <p className="text-red-500">Please select check-in and check-out dates to proceed.</p>
+      )}
+    </div>
+  </div>
               {/* rules */}
               <div>
                 <h3 className='h3'>Hotel Rules</h3>
