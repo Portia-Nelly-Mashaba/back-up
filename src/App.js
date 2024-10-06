@@ -28,6 +28,7 @@ import ShowFooter from './components/ShowFooter';
 import AdminOnlyRoute from './components/adminOnlyRoute/AdminOnlyRoute';
 import BookingSummary from './pages/home/BookingSummary';
 import CheckOutDetails from './pages/home/CheckOutDetails';
+import Payment from './pages/home/Payment';
 
 
 
@@ -54,6 +55,7 @@ const App = () => {
         <Route path="/booking/history" element={<BookingHistory />} />
         <Route path="/booking-summary/:id" element={<BookingSummary />} />
         <Route path="/checkout/:id" element={<CheckOutDetails />} />
+        <Route path="/payment" element={<Payment />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/*" element={ <AdminOnlyRoute> <Admin /> </AdminOnlyRoute>} />
         {/* <Route path="*" element={<Error />} /> */}
