@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CountryDropdown } from 'react-country-region-selector';
 import { useDispatch } from 'react-redux';
 import { SAVE_BILLING_ADDRESS } from '../../redux/slice/checkoutSlice'
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase/config';
+import { SpinnerDotted } from 'spinners-react';
 
 
 const initialAddressState ={
@@ -18,6 +21,11 @@ const initialAddressState ={
 const CheckOutDetails = () => {
   const [billingAddress, setBillingAddress] = useState({...initialAddressState});
 
+  const { state } = useLocation(); 
+  const { id } = useParams();
+  const [room, setRoom] = useState(state || null); 
+  const [loading, setLoading] = useState(!state); 
+
   const dispatch = useDispatch()
 
   const navigate = useNavigate();
@@ -30,6 +38,49 @@ const CheckOutDetails = () => {
     })
   };
 
+  useEffect(() => {
+    const fetchRoom = async () => {
+      if (!state) {
+        // Only fetch if state is not provided
+        try {
+          const roomDoc = doc(db, "rooms", id); // Fetch room by ID
+          const roomData = await getDoc(roomDoc);
+          if (roomData.exists()) {
+            console.log("Room data:", roomData.data());
+            setRoom(roomData.data());
+          }
+          setLoading(false);
+        } catch (error) {
+          console.error("Error fetching room data: ", error);
+        }
+      }
+    };
+    fetchRoom();
+  }, [id, state]);
+
+  // Check if room exists before trying to destructure its properties
+  if (!state && loading) {
+    return (
+      <div className="h-screen fixed bottom-0 top-0 bg-black/90 w-full z-50 flex justify-center items-center">
+        <SpinnerDotted />
+      </div>
+    );
+  }
+  if (!room) {
+    return <p className="text-lg text-red-500">No room details available.</p>;
+  }
+
+  // Destructure properties from room
+  const { imageURL, roomType, description, roomNo, amount } = room;
+  console.log("Room data:", room);
+
+  // If state was passed, use its properties
+  const {
+    numberOfNights,
+    totalAmount,
+  } = state;
+  console.log("State data:", state);
+
   
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -39,54 +90,10 @@ const CheckOutDetails = () => {
   };
 
   return (
-    <div>
+    <div className='pt-32'>
       
       {/* Main Content */}
-      <div className="grid sm:px-10 lg:grid-cols-2 lg:px-20 xl:px-32">
-        <div className="px-4 pt-8">
-          <p className="text-xl font-medium">Checkout Summary</p>
-          <p className="text-gray-400">Check your details. And select a suitable payment method.</p>
-          <div className="mt-8 space-y-3 rounded-lg border bg-white px-2 py-4 sm:px-6">
-            {/* Item 1 */}
-            <div className="flex flex-col rounded-lg bg-white sm:flex-row">
-              <img className="m-2 h-24 w-28 rounded-md border object-cover object-center" src="https://images.unsplash.com/flagged/photo-1556637640-2c80d3201be8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60" alt="" />
-              <div className="flex w-full flex-col px-4 py-4">
-                <span className="font-semibold">Nike Air Max Pro 8888 - Super Light</span>
-                <span className="float-right text-gray-400">42EU - 8.5US</span>
-                <p className="text-lg font-bold">$138.99</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Payment Methods */}
-          <p className="mt-8 text-lg font-medium">Payment Methods</p>
-          <form className="mt-5 grid gap-6">
-            <div className="relative">
-              <input className="peer hidden" id="radio_1" type="radio" name="radio" defaultChecked />
-              <span className="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
-              <label className="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4" htmlFor="radio_1">
-                <img className="w-14 object-contain" src="/images/naorrAeygcJzX0SyNI4Y0.png" alt="" />
-                <div className="ml-5">
-                  <span className="mt-2 font-semibold">e-Wallet</span>
-                  <p className="text-slate-500 text-sm leading-6">Reflect: 2-4 Days</p>
-                </div>
-              </label>
-            </div>
-
-            <div className="relative">
-              <input className="peer hidden" id="radio_2" type="radio" name="radio" defaultChecked />
-              <span className="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
-              <label className="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4" htmlFor="radio_2">
-                <img className="w-14 object-contain" src="/images/oG8xsl3xsOkwkMsrLGKM4.png" alt="" />
-                <div className="ml-5">
-                  <span className="mt-2 font-semibold">PayStripe</span>
-                  <p className="text-slate-500 text-sm leading-6">Reflect: immediately</p>
-                </div>
-              </label>
-            </div>
-          </form>
-        </div>
-
+      <div className="grid sm:px-10 lg:grid-cols-2 lg:px-20 xl:px-32 m-4">
         {/* Payment Details */}
         <form onSubmit={handleSubmit}>
         <div className="mt-10 bg-gray-50 px-4 pt-8 lg:mt-0">
@@ -191,12 +198,6 @@ const CheckOutDetails = () => {
                   }
                 })} 
               />
-                {/* <option disabled>Country</option>
-                            {country.map((type) => {
-                              return (
-                                <option key={type.id} value={type.name}>{type.name}</option>
-                              )
-                            })} */}
              
               <input 
               type="number" 
@@ -212,7 +213,7 @@ const CheckOutDetails = () => {
             <div className="mt-6 border-t border-b py-2">
               <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-gray-900">Total Amount</p>
-              <p className="text-2xl font-semibold text-gray-900">$408.00</p>
+              <p className="text-2xl font-semibold text-gray-900">R {totalAmount}</p>
               </div>
               <div className="flex items-center justify-between">
                 
@@ -225,6 +226,52 @@ const CheckOutDetails = () => {
           <button type='submit' className="mt-4 mb-8 w-full rounded-md bg-gray-900 px-6 py-3 font-medium text-white">Proceed To Checkout</button>
         </div>
         </form>
+
+        <div className="px-4 pt-8">
+          <p className="text-xl font-medium">Checkout Summary</p>
+          <p className="text-gray-400">Check your details. And select a suitable payment method.</p>
+          <div className="mt-8 space-y-3 rounded-lg border bg-white px-2 py-4 sm:px-6">
+            {/* Item 1 */}
+            <div className="flex flex-col rounded-lg bg-white sm:flex-row">
+              <img className="m-2 h-24 w-28 rounded-md border object-cover object-center" src={imageURL} alt={roomType} />
+              <div className="flex w-full flex-col px-4 py-4">
+                <span className="font-semibold">{roomType}</span>
+                <span className="float-right text-gray-400">{numberOfNights} Nights</span>
+                <p className="text-lg font-bold">R {totalAmount}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Methods */}
+          <p className="mt-8 text-lg font-medium">Payment Methods</p>
+          <form className="mt-5 grid gap-6">
+            <div className="relative">
+              <input className="peer hidden" id="radio_1" type="radio" name="radio" defaultChecked />
+              <span className="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
+              <label className="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4" htmlFor="radio_1">
+                <img className="w-14 object-contain" src="/images/naorrAeygcJzX0SyNI4Y0.png" alt="" />
+                <div className="ml-5">
+                  <span className="mt-2 font-semibold">e-Wallet</span>
+                  <p className="text-slate-500 text-sm leading-6">Reflect: 2-4 Days</p>
+                </div>
+              </label>
+            </div>
+
+            <div className="relative">
+              <input className="peer hidden" id="radio_2" type="radio" name="radio" defaultChecked />
+              <span className="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
+              <label className="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4" htmlFor="radio_2">
+                <img className="w-14 object-contain" src="/images/oG8xsl3xsOkwkMsrLGKM4.png" alt="" />
+                <div className="ml-5">
+                  <span className="mt-2 font-semibold">PayStripe</span>
+                  <p className="text-slate-500 text-sm leading-6">Reflect: immediately</p>
+                </div>
+              </label>
+            </div>
+          </form>
+        </div>
+
+        
       </div>
     </div>
   );

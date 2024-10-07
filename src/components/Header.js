@@ -9,6 +9,7 @@ import { REMOVE_ACTIVE_USER, SET_ACTIVE_USER } from '../redux/slice/authSlice';
 import ShowOnLogin, { ShowOnLogout } from './hiddenLink/HiddenLinks';
 // import { AdminOnlyLink } from './adminOnlyRoute/AdminOnlyRoute';
 import AdminOnlyRoute from './adminOnlyRoute/AdminOnlyRoute';
+import { useLocation } from 'react-router-dom';
 
 
 const Header = () => {
@@ -18,6 +19,8 @@ const Header = () => {
   const navigate = useNavigate()
 
   const dispatch = useDispatch();
+
+  const bookingSummaryWithIdRegex = /^\/booking-summary\/[a-zA-Z0-9]+$/;
 
   // Monitor currently signed-in user
 useEffect(() => {
@@ -66,9 +69,10 @@ useEffect(() => {
   return (
    <> 
    {/* <ToastContainer /> */}
-    <header 
+   <header 
       className={ `${ 
-      header ? 'bg-white py-6 shadow-lg' : 'bg-transparent py-8'} fixed z-50 w-full transition-all duration-500`}>
+        header ? (bookingSummaryWithIdRegex ? 'bg-black py-6 shadow-lg' : 'bg-white py-6 shadow-lg') : 'bg-transparent py-8'
+      } fixed z-50 w-full transition-all duration-500` }>
       <div className='container mx-auto flex flex-col items-center gap-y-6 lg:flex-row lg:justify-between lg:gap-y-0'>
         <NavLink to='/book'>
           {/* {Header ? <img src={Logo} /> : <img src={Logo} />} */}
