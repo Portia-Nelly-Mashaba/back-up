@@ -1,7 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { selectEmail } from "../../redux/slice/authSlice";
+import { selectBillingAddress } from "../../redux/slice/checkoutSlice";
 
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PK);
 
 const Payment = () => {
+  const [message, setMessage] = useState("Initializing checkout");
+  const [clientSecret, setClientSecret] = useState("");
+
+  const location = useLocation(); 
+  const { totalAmount, numberOfNights } = location.state;
+S
+  const billingAddress = useSelector(selectBillingAddress)
+  const customerEmail = useSelector(selectEmail)
+
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(totalAmount())
+  }, [dispatch])
+  
+  useEffect(() => {
+    
+    fetch("http://localhost:4242/create-payment-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        items: numberOfNights,
+        userEmail: customerEmail,
+        address: numberOfNights,
+       }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setClientSecret(data.clientSecret);
+      });
+  }, []);
+
+  const appearance = {
+    theme: 'stripe',
+  };
+ 
+  const option = {
+    clientSecret,
+    appearance,
+  };
+
   return (
     <section className="bg-white dark:bg-gray-900 w-screen h-screen py-8 antialiased md:py-16">
       <div className="flex justify-center items-center h-full"> {/* Ensures content is centered */}
@@ -112,20 +159,21 @@ const Payment = () => {
           <div className="w-full lg:w-1/2">
           <div className="mt-6 grow sm:mt-8 lg:mt-0">
       <div className="space-y-4 rounded-lg border border-gray-100 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
+        <p className="text-base font-medium text-gray-900 dark:text-white">Checkout Summary</p>
         <div className="space-y-2">
           <dl className="flex items-center justify-between gap-4">
-            <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Original price</dt>
-            <dd className="text-base font-medium text-gray-900 dark:text-white">$6,592.00</dd>
+            <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Room Rate </dt>
+            <dd className="text-base font-medium text-gray-900 dark:text-white">$150/night</dd>
           </dl>
 
           <dl className="flex items-center justify-between gap-4">
-            <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Savings</dt>
-            <dd className="text-base font-medium text-green-500">-$299.00</dd>
+            <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Nights</dt>
+            <dd className="text-base font-medium text-green-500">3</dd>
           </dl>
 
           <dl className="flex items-center justify-between gap-4">
-            <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Store Pickup</dt>
-            <dd className="text-base font-medium text-gray-900 dark:text-white">$99</dd>
+            <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Discount</dt>
+            <dd className="text-base font-medium text-gray-900 dark:text-white">R 0</dd>
           </dl>
 
           <dl className="flex items-center justify-between gap-4">

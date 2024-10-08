@@ -223,7 +223,14 @@ const CheckOutDetails = () => {
               
             </div>
           </div>
-          <button type='submit' className="mt-4 mb-8 w-full rounded-md bg-gray-900 px-6 py-3 font-medium text-white">Proceed To Checkout</button>
+          <button 
+            type='submit' 
+            className="mt-4 mb-8 w-full rounded-md bg-gray-900 px-6 py-3 font-medium text-white"
+            state={{
+              totalAmount,
+              numberOfNights,
+            }}
+            >Proceed To Checkout</button>
         </div>
         </form>
 
