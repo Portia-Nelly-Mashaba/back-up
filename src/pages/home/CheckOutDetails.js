@@ -78,6 +78,10 @@ const CheckOutDetails = () => {
   const {
     numberOfNights,
     totalAmount,
+    checkInDate,
+    checkOutDate,
+    adults,
+    kids,
   } = state;
   console.log("State data:", state);
 
@@ -229,6 +233,10 @@ const CheckOutDetails = () => {
             state={{
               totalAmount,
               numberOfNights,
+              checkInDate,
+              checkOutDate,
+              adults,
+              kids,
             }}
             >Proceed To Checkout</button>
         </div>

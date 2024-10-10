@@ -13,32 +13,30 @@ import { SpinnerDotted } from "spinners-react";
 import { onAuthStateChanged } from "firebase/auth";
 
 const Summary = () => {
-  const { state } = useLocation(); // Get the passed state
+  const { state } = useLocation(); 
   const { id } = useParams();
-  const navigate = useNavigate(); // Use for navigation
-  const [room, setRoom] = useState(state || null); // Initialize with passed state
-  const [loading, setLoading] = useState(!state); // Set loading based on passed state
-  const [user, setUser] = useState(null); // Track user authentication state
+  const navigate = useNavigate(); 
+  const [room, setRoom] = useState(state || null); 
+  const [loading, setLoading] = useState(!state); 
+  const [user, setUser] = useState(null); 
 
   useEffect(() => {
-    // Check if user is logged in
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUser(user); // User is logged in
+        setUser(user); 
       } else {
-        navigate("/login"); // User is not logged in, redirect to login
+        navigate("/login"); 
       }
     });
 
-    return () => unsubscribe(); // Clean up the listener on unmount
+    return () => unsubscribe(); 
   }, [navigate]);
 
   useEffect(() => {
     const fetchRoom = async () => {
       if (!state) {
-        // Only fetch if state is not provided
         try {
-          const roomDoc = doc(db, "rooms", id); // Fetch room by ID
+          const roomDoc = doc(db, "rooms", id); 
           const roomData = await getDoc(roomDoc);
           if (roomData.exists()) {
             console.log("Room data:", roomData.data());
@@ -86,11 +84,9 @@ const Summary = () => {
 
   // Handle payment button click
   const handlePayNow = () => {
-    if (!user) {
-      // If the user is not logged in, redirect to login page
+    if (!user) {     
       Navigate("/login");
     } else {
-      // Proceed with payment (you can integrate payment logic here)
       console.log("Proceeding to payment...");
     }
   };
