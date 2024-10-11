@@ -87,10 +87,20 @@ const CheckOutDetails = () => {
 
   
   const handleSubmit = (e) => {
-    e.preventDefault()
-    // console.log(billingAddress);
-    dispatch(SAVE_BILLING_ADDRESS(billingAddress))
-    navigate('/payment')
+    e.preventDefault();
+    dispatch(SAVE_BILLING_ADDRESS(billingAddress));
+    
+    navigate('/payment', {
+      state: {
+        totalAmount: totalAmount || 0,  
+        numberOfNights: numberOfNights || 0,
+        checkInDate: checkInDate || '',
+        checkOutDate: checkOutDate || '',
+        adults: adults || 1,
+        kids: kids || 0,
+        billingAddress,
+      },
+    });
   };
 
   return (

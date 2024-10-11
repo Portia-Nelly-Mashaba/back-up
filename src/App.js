@@ -29,6 +29,7 @@ import AdminOnlyRoute from './components/adminOnlyRoute/AdminOnlyRoute';
 import BookingSummary from './pages/home/BookingSummary';
 import CheckOutDetails from './pages/home/CheckOutDetails';
 import Payment from './pages/home/Payment';
+import CheckSuccess from './pages/home/CheckSuccess';
 
 
 
@@ -52,10 +53,11 @@ const App = () => {
         <Route path="/reset" element={<Reset />} />
         <Route path="/hotel/:id" element={<HotelDetails />} />
         <Route path="/saved" element={<Saved />} />
-        <Route path="/booking/history" element={<BookingHistory />} />
+        <Route path="/booking-history" element={<BookingHistory />} />
         <Route path="/booking-summary/:id" element={<BookingSummary />} />
         <Route path="/checkout/:id" element={<CheckOutDetails />} />
         <Route path="/payment" element={<Payment />} />
+        <Route path="/payment-success" element={<CheckSuccess />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/*" element={ <AdminOnlyRoute> <Admin /> </AdminOnlyRoute>} />
         {/* <Route path="*" element={<Error />} /> */}

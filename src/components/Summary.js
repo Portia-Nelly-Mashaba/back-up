@@ -224,6 +224,8 @@ const Summary = () => {
                     imageURL,         
                     numberOfNights,
                     totalAmount,
+                    checkInDate,
+                    checkOutDate,
                   }}
                 >
                   <button

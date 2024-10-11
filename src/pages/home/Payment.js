@@ -14,39 +14,49 @@ const Payment = () => {
   const [message, setMessage] = useState("Initializing checkout");
   const [clientSecret, setClientSecret] = useState("");
 
-  const location = useLocation(); 
-  const { totalAmount, numberOfNights, checkInDate, checkOutDate, adults, kids } = location.state || {};
-
-  const billingAddress = useSelector(selectBillingAddress);
+  const location = useLocation();
   const customerEmail = useSelector(selectEmail);
+  const billingAddress = useSelector(selectBillingAddress);
 
-  const dispatch = useDispatch();
+  const {
+    totalAmount = 0,
+    numberOfNights = 0,
+    checkInDate = "",
+    checkOutDate = "",
+    adults = 1,
+    kids = 0,
+  } = location.state || {};
 
-  // Ensure the required values exist before dispatching or making fetch requests
+  const amountPerNight = totalAmount / numberOfNights || 0; // Calculate amount per night if totalAmount is available
+
   useEffect(() => {
-    if (!totalAmount) {
-      setMessage('Invalid total amount.');
-    }
-  }, [totalAmount]);
+    console.log("Values before payment intent creation:", {
+      numberOfNights,
+      amountPerNight,
+      customerEmail,
+    });
 
-  const description = `Mzansi Stays payment: email: ${customerEmail}, Amount: ${totalAmount}`;
+    // if (!numberOfNights || !billingAddress || !totalAmount) {
+    //   setMessage("Invalid total amount, nights, or billing address.");
+    //   return;
+    // }
 
-  useEffect(() => {
-    if (numberOfNights && checkInDate && checkOutDate && adults && customerEmail && billingAddress) {
-      fetch("http://localhost:4242/create-payment-intent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          items: numberOfNights,
-          checkIn: checkInDate,
-          checkOut: checkOutDate,
-          adults,
-          kids,
-          userEmail: customerEmail,
-          address: billingAddress,
-          description
-        }),
-      })
+    fetch("http://localhost:4242/create-payment-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nights: numberOfNights,
+        checkIn: checkInDate,
+        checkOut: checkOutDate,
+        adults,
+        kids,
+        amountPerNight,
+        roomCapacity: 2, // Adjust this based on your room capacity logic
+        userEmail: customerEmail,
+        billingAddress,
+        description: `Mzansi Stays hotel payment: email: ${customerEmail}, Amount: ${totalAmount}`,
+      }),
+    })
       .then((res) => {
         if (res.ok) {
           return res.json();
@@ -58,15 +68,13 @@ const Payment = () => {
       })
       .catch((error) => {
         setMessage("Failed to initialize checkout");
+        console.error("Error initializing payment:", error);
         toast.error("Something went wrong");
       });
-    } else {
-      setMessage("Missing required booking information.");
-    }
-  }, [numberOfNights, checkInDate, checkOutDate, adults, kids, customerEmail, billingAddress, description]);
+  }, [numberOfNights, totalAmount, billingAddress]);
 
   const appearance = {
-    theme: 'stripe',
+    theme: "stripe",
   };
 
   const options = {
@@ -75,20 +83,19 @@ const Payment = () => {
   };
 
   return (
-    <>
-      <section>
-        <div className="container">
-          {!clientSecret ? (
-            <h3>{message}</h3>
-          ) : (
-            <Elements options={options} stripe={stripePromise}>
-              <CheckoutForm />
-            </Elements>
-          )}
-        </div>
-      </section>
-    </>
+    <section>
+      <div className="container">
+        {!clientSecret ? (
+          <h3>{message}</h3>
+        ) : (
+          <Elements options={options} stripe={stripePromise}>
+            <CheckoutForm />
+          </Elements>
+        )}
+      </div>
+    </section>
   );
 };
 
 export default Payment;
+

@@ -21,8 +21,8 @@ const calculateNumberOfNights = (checkIn, checkOut) => {
   return 0;
 };
 
-const calculateOrderAmount = ({ nights, checkIn, checkOut, adults, kids, amountPerNight, roomCapacity }) => {
-  // Calculate the number of nights
+const calculateOrderAmount = (data) => {
+  const { checkIn, checkOut, adults, kids, amountPerNight, roomCapacity } = data;
   const numberOfNights = calculateNumberOfNights(checkIn, checkOut);
 
   // Base room rate (amount per night * number of nights)
@@ -49,10 +49,16 @@ const calculateOrderAmount = ({ nights, checkIn, checkOut, adults, kids, amountP
 };
 
 app.post("/create-payment-intent", async (req, res) => {
-  const { nights, checkIn, checkOut, adults, kids, amountPerNight, roomCapacity, address, description } = req.body;
+  console.log("Received request body:", req.body); // Log incoming data
+
+  const { nights, checkIn, checkOut, adults, kids, amountPerNight, roomCapacity, billingAddress, description } = req.body;
+
+  if (!nights || !amountPerNight) {
+    console.error("Invalid data:", { nights, amountPerNight });
+    return res.status(400).send({ error: "Invalid nights or amountPerNight" });
+  }
 
   try {
-    // Calculate order amount using the hotel pricing logic
     const orderAmount = calculateOrderAmount({
       nights,
       checkIn,
@@ -62,6 +68,7 @@ app.post("/create-payment-intent", async (req, res) => {
       amountPerNight,
       roomCapacity
     });
+  
 
     // Create a PaymentIntent with the calculated order amount and currency
     const paymentIntent = await stripe.paymentIntents.create({
@@ -71,19 +78,19 @@ app.post("/create-payment-intent", async (req, res) => {
         enabled: true,
       },
       description,
-      billing_address_collection: "required",
-      shipping: {
-        name: address.full_name,
+      billingAddress: {
         address: {
-          line1: address.address,
-          country: address.country,
-          postal_code: address.code,
+          line1: billingAddress.address,
+          country: billingAddress.country,
+          postal_code: billingAddress.code,
         },
-        phone: address.phone_no,
-        id: address.id_no,
+        name: billingAddress.full_name,
+        phone: billingAddress.phone_no,
+        id: billingAddress.id_no,
+       
       },
 
-      
+
     });
 
     res.send({
