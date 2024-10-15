@@ -29,7 +29,7 @@ const CheckSuccess = () => {
                     href="/booking-history"
                     className="px-12 bg-accent hover:bg-accent text-white font-semibold py-3"
                 >
-                    GO BACK
+                   View Booking Summary
                 </a>
             </div>
         </div>

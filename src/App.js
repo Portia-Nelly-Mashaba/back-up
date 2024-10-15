@@ -57,7 +57,7 @@ const App = () => {
         <Route path="/booking-summary/:id" element={<BookingSummary />} />
         <Route path="/checkout/:id" element={<CheckOutDetails />} />
         <Route path="/payment" element={<Payment />} />
-        <Route path="/payment-success" element={<CheckSuccess />} />
+        <Route path="/payment-success" element={<Login />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/*" element={ <AdminOnlyRoute> <Admin /> </AdminOnlyRoute>} />
         {/* <Route path="*" element={<Error />} /> */}

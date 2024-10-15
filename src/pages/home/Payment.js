@@ -17,6 +17,9 @@ const Payment = () => {
   const location = useLocation();
   const customerEmail = useSelector(selectEmail);
   const billingAddress = useSelector(selectBillingAddress);
+  console.log(customerEmail);
+  console.log(billingAddress);
+  
 
   const {
     totalAmount = 0,
@@ -27,7 +30,7 @@ const Payment = () => {
     kids = 0,
   } = location.state || {};
 
-  const amountPerNight = totalAmount / numberOfNights || 0; // Calculate amount per night if totalAmount is available
+  const amountPerNight = totalAmount / numberOfNights || 0; 
 
   useEffect(() => {
     console.log("Values before payment intent creation:", {

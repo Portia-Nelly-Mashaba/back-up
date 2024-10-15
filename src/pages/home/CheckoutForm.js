@@ -1,19 +1,68 @@
 import React, { useState } from "react";
 import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { selectEmail, selectUserName } from "../../redux/slice/authSlice";
+import { selectBillingAddress } from "../../redux/slice/checkoutSlice";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { db } from "../../firebase/config";
 
-const CheckoutForm = () => {
-  const stripe = useStripe();
-  const elements = useElements();
-
+const CheckoutForm = ({
+  totalAmount = 0,
+  numberOfNights = 0,
+  checkInDate = "",
+  checkOutDate = "",
+  roomNo = "",
+  roomType = "",
+  adults = 1,
+  kids = 0,
+}) => {
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-    // Define paymentElementOptions if you have specific options, otherwise leave it as an empty object
-    const paymentElementOptions = {
-        layout: "tabs" // Example option, you can customize as needed
-      };
+  const stripe = useStripe();
+  const elements = useElements();
 
+  const userName = useSelector(selectUserName);
+  const userEmail = useSelector(selectEmail);
+  const userAddress = useSelector(selectBillingAddress);
+
+  // Define paymentElementOptions if you have specific options, otherwise leave it as an empty object
+  const paymentElementOptions = {
+    layout: "tabs", // Example option, you can customize as needed
+  };
+
+  // Function to save the booking to Firestore
+  const saveBooking = async () => {
+    const today = new Date();
+    const bookingData = {
+      userEmail,
+      userName,
+      userAddress,
+      totalAmount,
+      numberOfNights,
+      checkInDate,
+      checkOutDate,
+      adults,
+      kids,
+      roomNo,
+      roomType,
+      bookingDate: today.toDateString(), 
+      bookingTime: today.toLocaleTimeString(), 
+      bookingStatus: "Room Booked",
+      createdAt: Timestamp.now(), 
+    };
+
+    try {
+      // Save the booking to Firestore
+      await addDoc(collection(db, "bookings"), bookingData);
+      toast.success("Booking saved successfully!"); // Show success toast
+    } catch (error) {
+      toast.error("Failed to save booking: " + error.message); // Show error toast
+    }
+  };
+
+  // Handle Stripe payment submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(null);
@@ -24,30 +73,26 @@ const CheckoutForm = () => {
 
     setIsLoading(true);
 
-    const confirmPayment = await stripe
+    // Confirm payment with Stripe
+    const result = await stripe
       .confirmPayment({
         elements,
         confirmParams: {
-          // Make sure to change this to your payment completion page
+          // Change this to your payment success URL
           return_url: "http://localhost:4243/payment-success",
         },
-        redirect: "if_required",
-      })
-      .then((result) => {
-        // ok - paymentIntent // bad - error
-        if (result.error) {
-          toast.error(result.error.message);
-          setMessage(result.error.message);
-          return;
-        }
-        if (result.paymentIntent) {
-          if (result.paymentIntent.status === "succeeded") {
-            setIsLoading(false);
-            toast.success("Payment successful");
-            // saveOrder();
-          }
-        }
+        redirect: "if_required", // Don't redirect unless required
       });
+
+    if (result.error) {
+      // Handle error in payment process
+      toast.error(result.error.message);
+      setMessage(result.error.message);
+    } else if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
+      // Payment succeeded, save booking to Firestore
+      toast.success("Payment successful");
+      await saveBooking(); // Save booking information after payment succeeds
+    }
 
     setIsLoading(false);
   };

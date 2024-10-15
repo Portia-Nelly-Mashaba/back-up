@@ -226,6 +226,7 @@ const Summary = () => {
                     totalAmount,
                     checkInDate,
                     checkOutDate,
+                    roomNo,
                   }}
                 >
                   <button

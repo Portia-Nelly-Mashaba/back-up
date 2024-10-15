@@ -180,7 +180,7 @@ const HotelDetails = () => {
                   <KidsDropdown onChange={(count) => setNumberOfKids(parseInt(count.charAt(0)))} />
                 </div>
 
-                <p>Total: ${totalAmount}</p>
+                <p>Total: R{totalAmount}</p>
 
                 {/* Only show button if both check-in and check-out dates are provided */}
                 {checkInDate && checkOutDate ? (
