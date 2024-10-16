@@ -90,7 +90,7 @@ const CheckOutDetails = () => {
     e.preventDefault();
     dispatch(SAVE_BILLING_ADDRESS(billingAddress));
     
-    navigate('/payment', {
+    navigate('/contact', {
       state: {
         totalAmount: totalAmount || 0,  
         numberOfNights: numberOfNights || 0,

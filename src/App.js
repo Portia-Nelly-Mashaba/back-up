@@ -33,8 +33,6 @@ import CheckSuccess from './pages/home/CheckSuccess';
 
 
 
-
-
 const App = () => {
   
   return (
@@ -56,8 +54,9 @@ const App = () => {
         <Route path="/booking-history" element={<BookingHistory />} />
         <Route path="/booking-summary/:id" element={<BookingSummary />} />
         <Route path="/checkout/:id" element={<CheckOutDetails />} />
-        <Route path="/payment" element={<Payment />} />
-        <Route path="/payment-success" element={<Login />} />
+        <Route path="/checkout-payment" element={<Contact />} />
+        {/* <Route path="/payment" element={<CheckoutForm />} /> */}
+        <Route path="/payment-success" element={<CheckSuccess />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/*" element={ <AdminOnlyRoute> <Admin /> </AdminOnlyRoute>} />
         {/* <Route path="*" element={<Error />} /> */}

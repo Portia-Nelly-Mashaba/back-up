@@ -51,7 +51,7 @@ const calculateOrderAmount = (data) => {
 app.post("/create-payment-intent", async (req, res) => {
   console.log("Received request body:", req.body); // Log incoming data
 
-  const { nights, checkIn, checkOut, adults, kids, amountPerNight, roomCapacity, billingAddress, description } = req.body;
+  const { nights, checkIn, checkOut, adults, kids, amountPerNight, roomCapacity } = req.body;
 
   if (!nights || !amountPerNight) {
     console.error("Invalid data:", { nights, amountPerNight });
@@ -76,20 +76,7 @@ app.post("/create-payment-intent", async (req, res) => {
       currency: "zar",
       automatic_payment_methods: {
         enabled: true,
-      },
-      description,
-      billingAddress: {
-        address: {
-          line1: billingAddress.address,
-          country: billingAddress.country,
-          postal_code: billingAddress.code,
-        },
-        name: billingAddress.full_name,
-        phone: billingAddress.phone_no,
-        id: billingAddress.id_no,
-       
-      },
-
+      }
 
     });
 
@@ -103,41 +90,6 @@ app.post("/create-payment-intent", async (req, res) => {
 });
 
 
-
-
-
-// //Uncomment this part if you plan to use the payment intent
-// const calculateOrderAmount = (items) => {
-//   return 1400 * 100; // Replace this with your own logic to calculate the amount
-// };
-
-// app.post("/create-payment-intent", async (req, res) => {
-//   const { items,  address, description } = req.body;
-
-//   try {
-//     // Create a PaymentIntent with the order amount and currency
-//     const paymentIntent = await stripe.paymentIntents.create({
-//       amount: calculateOrderAmount(items),
-//       currency: "usd",
-//       automatic_payment_methods: {
-//         enabled: true,
-//       },
-//       description,
-//       address:{
-//         billingAddress: {
-//           address: address.address,
-//           country: address.country,
-//           code: address.code
-//         },
-          
-//         full_name: address.full_name,
-//           id_no: address.id_no,
-//           phone_no: address.phone_no,
-//       },
-     
-
-
-//     });
 
 const PORT = process.env.PORT || 4242;
 app.listen(PORT, () => console.log(`Node server listening on port ${PORT}!`));
