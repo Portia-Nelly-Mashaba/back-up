@@ -11,7 +11,7 @@ import CheckoutForm from "./CheckoutForm";
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PK);
 
 const Payment = () => {
-  const [message, setMessage] = useState("Initializing checkout");
+  const [message, setMessage] = useState("Initializing checkout...");
   const [clientSecret, setClientSecret] = useState("");
 
   const location = useLocation();
@@ -26,8 +26,10 @@ const Payment = () => {
     numberOfNights = 0,
     checkInDate = "",
     checkOutDate = "",
-    adults = 1,
+    adults = 0,
     kids = 0,
+    roomType = 0,
+    roomNo = 0,
   } = location.state || {};
 
   const amountPerNight = totalAmount / numberOfNights || 0; 
@@ -54,8 +56,9 @@ const Payment = () => {
         adults,
         kids,
         amountPerNight,
-        roomCapacity: 2, // Adjust this based on your room capacity logic
         userEmail: customerEmail,
+        roomType,
+        roomNo,
         billingAddress,
         description: `Mzansi Stays hotel payment: email: ${customerEmail}, Amount: ${totalAmount}`,
       }),

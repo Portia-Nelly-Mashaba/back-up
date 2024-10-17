@@ -72,7 +72,7 @@ const CheckOutDetails = () => {
 
   // Destructure properties from room
   const { imageURL, roomType, description, roomNo, amount } = room;
-  console.log("Room data:", room);
+  // console.log("Room data:", room);
 
   // If state was passed, use its properties
   const {
@@ -83,14 +83,14 @@ const CheckOutDetails = () => {
     adults,
     kids,
   } = state;
-  console.log("State data:", state);
+  // console.log("State data:", state);
 
   
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(SAVE_BILLING_ADDRESS(billingAddress));
     
-    navigate('/contact', {
+    navigate('/checkout-payment', {
       state: {
         totalAmount: totalAmount || 0,  
         numberOfNights: numberOfNights || 0,
@@ -99,6 +99,8 @@ const CheckOutDetails = () => {
         adults: adults || 1,
         kids: kids || 0,
         billingAddress,
+        roomType,
+        roomNo,
       },
     });
   };

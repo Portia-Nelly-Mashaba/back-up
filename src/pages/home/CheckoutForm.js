@@ -6,19 +6,12 @@ import { selectEmail, selectUserName } from "../../redux/slice/authSlice";
 import { selectBillingAddress } from "../../redux/slice/checkoutSlice";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { db } from "../../firebase/config";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const CheckoutForm = ({
-  totalAmount = 0,
-  numberOfNights = 0,
-  checkInDate = "",
-  checkOutDate = "",
-  roomNo = "",
-  roomType = "",
-  adults = 1,
-  kids = 0,
-}) => {
+const CheckoutForm = () => {
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { state } = useLocation(); 
 
   const stripe = useStripe();
   const elements = useElements();
@@ -26,11 +19,23 @@ const CheckoutForm = ({
   const userName = useSelector(selectUserName);
   const userEmail = useSelector(selectEmail);
   const userAddress = useSelector(selectBillingAddress);
+  const navigate = useNavigate();
 
   // Define paymentElementOptions if you have specific options, otherwise leave it as an empty object
   const paymentElementOptions = {
     layout: "tabs", // Example option, you can customize as needed
   };
+  const {
+    numberOfNights,
+    totalAmount,
+    checkInDate,
+    checkOutDate,
+    adults,
+    kids,
+    roomType: room_type,  
+    roomNo: room_no,  
+  } = state;
+  console.log("State data:", state);
 
   // Function to save the booking to Firestore
   const saveBooking = async () => {
@@ -45,8 +50,8 @@ const CheckoutForm = ({
       checkOutDate,
       adults,
       kids,
-      roomNo,
-      roomType,
+      roomNo: room_no,  
+      roomType: room_type,  
       bookingDate: today.toDateString(), 
       bookingTime: today.toLocaleTimeString(), 
       bookingStatus: "Room Booked",
@@ -78,10 +83,10 @@ const CheckoutForm = ({
       .confirmPayment({
         elements,
         confirmParams: {
-          // Change this to your payment success URL
-          return_url: "http://localhost:4243/payment-success",
+          
+          return_url: "http://localhost:4243/contact",
         },
-        redirect: "if_required", // Don't redirect unless required
+        redirect: "if_required", 
       });
 
     if (result.error) {
@@ -91,7 +96,8 @@ const CheckoutForm = ({
     } else if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
       // Payment succeeded, save booking to Firestore
       toast.success("Payment successful");
-      await saveBooking(); // Save booking information after payment succeeds
+      await saveBooking(); 
+      navigate("/payment-success");
     }
 
     setIsLoading(false);
