@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import AllBookings from "./AllBokkings";
+import AllBookings from "./AllBookings";
 
 const BookingHistory = () => {
   // State to manage the visibility of each section

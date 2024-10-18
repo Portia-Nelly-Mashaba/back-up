@@ -1,12 +1,23 @@
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
+import { SpinnerDotted } from 'spinners-react';
 import { db } from '../../firebase/config';
 import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectBookingHistory, STORE_BOOKINGS } from '../../redux/slice/bookingSlice';
+import { selectEmail } from '../../redux/slice/authSlice';
+import { useNavigate } from 'react-router-dom';
+
 
 const AllBookings = () => {
-
-  const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // Access bookings from Redux store
+  const bookings = useSelector(selectBookingHistory);
+  const userEmail = useSelector(selectEmail);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     getBookings();
@@ -17,7 +28,6 @@ const AllBookings = () => {
 
     try {
       const bookingsRef = collection(db, "bookings");
-
       const q = query(bookingsRef, orderBy("createdAt", "desc"));
 
       onSnapshot(q, (snapshot) => {
@@ -25,7 +35,9 @@ const AllBookings = () => {
           id: doc.id,
           ...doc.data()
         }));
-        setBookings(allBookings);
+
+        // Dispatch the bookings data to Redux store
+        dispatch(STORE_BOOKINGS(allBookings));
         setLoading(false);
       });
 
@@ -34,6 +46,16 @@ const AllBookings = () => {
       toast.error(error.message);
     }
   };
+
+
+  const handleClick = (id) => {
+    navigate(`/booking-details/${id}`);
+  }
+
+  const filteredBookings = bookings.filter((booking) => {
+    //console.log("Filtering booking:", booking); 
+    return booking.userEmail === userEmail; 
+});
 
   return (
     <div>
@@ -71,34 +93,52 @@ const AllBookings = () => {
                 <tbody className="bg-white">
                   {loading ? (
                     <tr>
-                      <td colSpan="5" className="text-center py-4">Loading...</td>
+                      <td colSpan="5" className="text-center py-4">
+                        <SpinnerDotted /> {/* Display spinner */}
+                        Loading...
+                      </td>
                     </tr>
-                  ) : bookings.length === 0 ? (
+                  ) : filteredBookings.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="text-center py-4">No bookings available</td>
+                      <td colSpan="5" className="text-center py-4">No bookings found</td>
                     </tr>
                   ) : (
-                    bookings.map((booking, index) => (
-                      <tr key={booking.id}>
-                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                          <div className="text-sm leading-5 text-gray-800">{index + 1}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                          <div className="text-sm leading-5 text-blue-900">{booking.createdAt.toDate().toLocaleDateString()}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                          <div className="text-sm leading-5 text-blue-900">{booking.bookingId}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                          <div className="text-sm leading-5 text-blue-900">R{booking.amount}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                          <div className="text-sm leading-5 text-blue-900">{booking.status}</div>
-                        </td>
-                      </tr>
-                    ))
+                    filteredBookings.map((booking, index) => {
+                      const { id, bookingDate, bookingTime, totalAmount, bookingStatus } = booking;
+                      return (
+                        
+                        <tr key={id} onClick={() => handleClick(id)} className="cursor-pointer"> 
+                          <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                            <div className="text-sm leading-5 text-gray-800">{index + 1}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                            <div className="text-sm leading-5 text-blue-900">
+                              {bookingDate} at {bookingTime}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                            <div className="text-sm leading-5 text-blue-900">{id}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                            <div className="text-sm leading-5 text-blue-900">{"R"} {totalAmount}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                            <div
+                              className={`text-sm leading-5 ${bookingStatus === 'Room Booked' ? 'text-green-500' :
+                                  bookingStatus === 'Cancelled' ? 'text-red-500' :
+                                    bookingStatus === 'Check-In' ? 'text-orange-500' :
+                                      bookingStatus === 'Completed' ? 'text-blue-900' : 'text-gray-500'
+                                }`}
+                            >
+                              {bookingStatus}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
+
               </table>
             </div>
           </div>

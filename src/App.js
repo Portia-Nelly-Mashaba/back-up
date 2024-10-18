@@ -30,6 +30,8 @@ import BookingSummary from './pages/home/BookingSummary';
 import CheckOutDetails from './pages/home/CheckOutDetails';
 import Payment from './pages/home/Payment';
 import CheckSuccess from './pages/home/CheckSuccess';
+import BookingDetails from './pages/bookingHistory/BookingDetails';
+import BookingReview from './pages/review/BookingReview';
 
 
 
@@ -52,7 +54,9 @@ const App = () => {
         <Route path="/hotel/:id" element={<HotelDetails />} />
         <Route path="/saved" element={<Saved />} />
         <Route path="/booking-history" element={<BookingHistory />} />
+        <Route path="/booking-details/:id" element={<BookingDetails />} />
         <Route path="/booking-summary/:id" element={<BookingSummary />} />
+        <Route path="/review-booking/:id" element={<BookingReview />} />
         <Route path="/checkout/:id" element={<CheckOutDetails />} />
         <Route path="/checkout-payment" element={<Payment />} />
         <Route path="/payment-success" element={<CheckSuccess />} />
