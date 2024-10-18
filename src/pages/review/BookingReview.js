@@ -1,13 +1,23 @@
-import { doc, getDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, Timestamp } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import { db } from '../../firebase/config';
+import { useSelector } from 'react-redux';
+import { selectBookingHistory } from '../../redux/slice/bookingSlice';
+import { selectEmail, selectUserName } from '../../redux/slice/authSlice';
+import StarsRating from 'react-star-rate';
+import { toast } from 'react-toastify';
 
 const BookingReview = () => {
+    const [rate, setRate] = useState(0);
+    const [review, setReview] = useState("");
     const [booking, setBooking] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [rating, setRating] = useState(3);
     const { id } = useParams();
+
+    const bookings = useSelector(selectBookingHistory);
+  const userEmail = useSelector(selectEmail);
+  const userName = useSelector(selectUserName);
 
     useEffect(() => {
         const fetchBooking = async () => {
@@ -35,21 +45,39 @@ const BookingReview = () => {
     }
 
     const {
-        bookingDate,
-        checkInDate,
-        checkOutDate,
         roomType,
         roomNo,
-        adults,
-        kids,
-        numberOfNights,
-        totalAmount,
-        bookingStatus,
     } = booking;
+    
 
-    const handleRatingClick = (index) => {
-        setRating(index);
-    };
+    const submitReview = async (e) => {
+        e.preventDefault();
+        
+        const today = new Date();
+        const date = today.toDateString(); 
+      
+        const reviewData = {
+            userEmail,
+            userName, 
+            id,
+            rate,
+            review,
+            reviewDate:date,
+            createdAt: Timestamp.now().toDate(), 
+          };
+      
+        try {
+          await addDoc(collection(db, "reviews"), reviewData);
+          toast.success("Review saved successfully!"); 
+        
+          setRate(0);
+          setReview("");
+        } catch (error) {
+          toast.error("Failed to save review: " + error.message);
+        }
+      };
+
+ 
     return (
         <div>
             <section className="pt-32 py-24 relative">
@@ -64,20 +92,26 @@ const BookingReview = () => {
                                 <p className="font-manrope text-xl leading-10 text-black">Room Details: {roomType} </p>
                                 <p className="font-manrope text-xl leading-10 text-black">Room No: {roomNo} </p>
                             </div>
-
+                            <form onSubmit={(e) => submitReview(e)}>
                             <div className="mb-12">
                                 <h4 className="font-manrope font-bold text-xl leading-8 text-black">Rating:</h4>
                                 <div className="flex items-center mt-2">
-                                    {/* Medium Stars */}
-                                    {[1, 2, 3, 4, 5].map((star) => (
+                                <StarsRating
+                                    value={rate}
+                                    onChange={(rate) => {
+                                        setRate(rate);
+                                        
+                                    }}
+                                    />
+                                    {/* {[1, 2, 3, 4, 5].map((star) => (
                                         <span
                                             key={star}
-                                            className={`cursor-pointer text-3xl ${star <= rating ? 'text-yellow-500' : 'text-gray-400'}`}
+                                            className={`cursor-pointer text-3xl ${star <= rate ? 'text-yellow-500' : 'text-gray-400'}`}
                                             onClick={() => handleRatingClick(star)}
                                         >
                                             ★
                                         </span>
-                                    ))}
+                                    ))} */}
                                 </div>
                             </div>
 
@@ -90,12 +124,15 @@ const BookingReview = () => {
                                         id="review"
                                         cols="30"
                                         rows="5"
+                                        onChange={(e) => setReview(e.target.value)}
                                         className="py-3 px-4 mb-16 rounded-2xl border border-gray-300 w-full h-[283px] resize-none font-normal text-base leading-7 placeholder:text-gray-400 text-gray-900 outline-0 max-sm:mx-auto"
-                                        placeholder="Enter a description...">
+                                        placeholder="Enter a description..."
+                                        required>
                                     </textarea>
-                                    <button className="rounded-full py-3 px-5 text-center bg-indigo-600 text-white font-semibold text-base w-full max-w-sm shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-700 hover:shadow-indigo-300">Submit Rating</button>
+                                    <button type='submit' className="rounded-full py-3 px-5 text-center bg-accent text-white font-semibold text-base w-full max-w-sm shadow-sm shadow-transparent transition-all duration-500 hover:bg-accent/85 hover:shadow-accent/85">Submit Rating</button>
                                 </div>
                             </div>
+                            </form>
 
                         </div>
                        

@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 const AllBookings = () => {
   const [loading, setLoading] = useState(false);
 
-  // Access bookings from Redux store
+  
   const bookings = useSelector(selectBookingHistory);
   const userEmail = useSelector(selectEmail);
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useParams } from 'react-router-dom';
-import { FaBath, FaCheck, FaCoffee, FaDumbbell, FaMugHot, FaParking, FaSwimmingPool, FaWifi } from 'react-icons/fa';
+import { FaBath, FaCheck, FaCoffee, FaDumbbell, FaHeart, FaMugHot, FaParking, FaShareAlt, FaStar, FaSwimmingPool, FaWifi } from 'react-icons/fa';
 
 import AdultsDropdown from '../../components/AdultsDropdown.js';
 import KidsDropdown from '../../components/KidsDropdown.js';
@@ -208,6 +208,8 @@ const HotelDetails = () => {
                 )}
               </div>
             </div>
+
+
             {/* rules */}
             <div>
               <h3 className='h3'>Hotel Rules</h3>
@@ -233,6 +235,19 @@ const HotelDetails = () => {
                   No Smoking in the apartment
                 </li>
               </ul>
+            </div>
+
+
+            <div className="flex justify-between items-center mt-12">
+              <div className="text-2xl text-accent">
+                <FaStar />
+              </div>
+
+            
+              <div className="flex items-center space-x-6 text-2xl text-accent">
+                <FaShareAlt  />
+                <FaHeart className="" />
+              </div>
             </div>
           </div>
         </div>
