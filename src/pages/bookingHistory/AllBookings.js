@@ -125,9 +125,9 @@ const AllBookings = () => {
                           <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                             <div
                               className={`text-sm leading-5 ${bookingStatus === 'Room Booked' ? 'text-green-500' :
-                                  bookingStatus === 'Cancelled' ? 'text-red-500' :
-                                    bookingStatus === 'Check-In' ? 'text-orange-500' :
-                                      bookingStatus === 'Completed' ? 'text-blue-900' : 'text-gray-500'
+                                  bookingStatus === 'cancelled' ? 'text-red-500' :
+                                    bookingStatus === 'check-in' ? 'text-orange-500' :
+                                      bookingStatus === 'completed' ? 'text-blue-900' : 'text-gray-500'
                                 }`}
                             >
                               {bookingStatus}

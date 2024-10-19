@@ -220,6 +220,7 @@ const Summary = () => {
                   className="w-96 md:w-full"
                   onClick={handlePayNow}
                   state={{
+                    id,
                     roomType,
                     imageURL,         
                     numberOfNights,

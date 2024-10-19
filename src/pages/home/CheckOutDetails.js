@@ -92,6 +92,7 @@ const CheckOutDetails = () => {
     
     navigate('/checkout-payment', {
       state: {
+        id,
         totalAmount: totalAmount || 0,  
         numberOfNights: numberOfNights || 0,
         checkInDate: checkInDate || '',

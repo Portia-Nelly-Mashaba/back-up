@@ -9,6 +9,7 @@ import CheckOut from '../../components/CheckOut.js';
 import ScrollToTop from '../../components/ScrollToTop.js';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/config.js';
+import Review from '../../components/Review.js';
 
 const HotelDetails = () => {
   const [room, setRoom] = useState(null);
@@ -186,6 +187,7 @@ const HotelDetails = () => {
                 {checkInDate && checkOutDate ? (
                   isValidReservation ? (
                     <NavLink to={`/booking-summary/${id}`} state={{
+                      id,
                       roomType: room_type,
                       description: desc,
                       imageURL: imageURL,
@@ -240,7 +242,7 @@ const HotelDetails = () => {
 
             <div className="flex justify-between items-center mt-12">
               <div className="text-2xl text-accent">
-                <FaStar />
+                <Review/>
               </div>
 
             

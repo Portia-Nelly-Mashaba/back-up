@@ -1,3 +1,5 @@
+// Updated Login Component with Firestore functionality
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import googlePic from '../../assets/img/google.svg';
@@ -5,10 +7,9 @@ import loginImg from '../../assets/img/LoginImg.jpg';
 import { toast } from 'react-toastify';
 import { SpinnerDotted } from 'spinners-react';
 import 'react-toastify/dist/ReactToastify.css';
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from '../../firebase/config';
-import { GoogleAuthProvider } from 'firebase/auth';
-
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore'; // Import Firestore
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -16,6 +17,27 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const db = getFirestore(); // Initialize Firestore
+
+  // Function to store/update user data in Firestore
+  const updateUserFirestore = async (user) => {
+    const userRef = doc(db, 'users', user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      // If the user does not exist in Firestore, create a new entry
+      await setDoc(userRef, {
+        email: user.email,
+        createdAt: new Date(),
+        role: 'user' // Default role for all users
+      });
+    } else {
+      // If user exists, update necessary fields (you can modify this as needed)
+      await setDoc(userRef, {
+        email: user.email,
+      }, { merge: true });
+    }
+  };
 
   // Function for login with email and password
   const LoginUser = (e) => {
@@ -23,33 +45,41 @@ const Login = () => {
     setLoading(true);
 
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // const user = userCredential.user;
+      .then(async (userCredential) => {
+        const user = userCredential.user;
+
+        // Update or create the user data in Firestore
+        await updateUserFirestore(user);
+
         setLoading(false);
-        toast.success('Login Successful')
-        // window.alert('Login successful...');
+        toast.success('Login Successful');
         navigate(-1);
       })
       .catch((error) => {
         setLoading(false);
         toast.error(error.message);
-        // window.alert(error.message);
       });
   };
 
   // Function for Google login
   const loginWithGoogle = () => {
     const provider = new GoogleAuthProvider();
+    setLoading(true);
+
     signInWithPopup(auth, provider)
-      .then((result) => {
-        // const user = result.user;
-        toast.success('Login Successful')
-        // window.alert('Login Successfully');
+      .then(async (result) => {
+        const user = result.user;
+
+        // Update or create the user data in Firestore
+        await updateUserFirestore(user);
+
+        setLoading(false);
+        toast.success('Login Successful');
         navigate(-1);
       })
       .catch((error) => {
-        toast.error(error.message)
-        // window.alert(error.message);
+        setLoading(false);
+        toast.error(error.message);
       });
   };
 

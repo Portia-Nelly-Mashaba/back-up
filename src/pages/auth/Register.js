@@ -1,44 +1,51 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// import googlePic from '../../assets/img/google.svg';
 import registerImg from '../../assets/img/RegisterImg.jpg';
 import { SpinnerDotted } from 'spinners-react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/config';
-
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 
 const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  const navigate = useNavigate();
+  const db = getFirestore(); // Initialize Firestore
 
-  const navigate = useNavigate()
-
-  const RegisterUser = (e) => {
+  const RegisterUser = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
+      return; // Stop the function if passwords do not match
     }
 
     setLoading(true);
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user);
-        setLoading(false);
-        toast.success('Registration Successful')
-        // window.alert('Registration succesful...');
-        navigate(-1);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-        // window.alert(error.message);
-        setLoading(false);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      console.log(user);
+      
+      // Store user data in Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        role: 'user', 
+        createdAt: new Date(), 
       });
+
+      setLoading(false);
+      toast.success('Registration Successful');
+      navigate(-1); // Navigate back after successful registration
+    } catch (error) {
+      toast.error(error.message);
+      setLoading(false);
+    }
   }
+
   return (
     <>
       <section>
@@ -101,7 +108,7 @@ const Register = () => {
                   />
                 </div>
                 <div className="py-4">
-                  <label htmlFor="password" className="mb-2 text-md block">
+                  <label htmlFor="confirmpassword" className="mb-2 text-md block">
                     Confirm Password
                   </label>
                   <input
@@ -119,10 +126,6 @@ const Register = () => {
                 <button type='submit' className="w-full bg-black text-white p-2 rounded-lg mt-4 mb-8 hover:bg-accent hover:text-white hover:border hover:border-gray-300">
                   Register
                 </button>
-                {/* <button className="w-full border border-gray-300 text-md p-2 rounded-lg mb-6 hover:bg-accent hover:text-white">
-                  <img src={googlePic} alt="Google" className="w-6 h-6 inline mr-2" />
-                  Register with Google
-                </button> */}
                 <div className="text-center text-gray-400">
                   <Link to="/login">
                     Already have an account?{" "}

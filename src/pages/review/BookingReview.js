@@ -47,6 +47,7 @@ const BookingReview = () => {
     const {
         roomType,
         roomNo,
+        roomId,
     } = booking;
     
 
@@ -59,7 +60,7 @@ const BookingReview = () => {
         const reviewData = {
             userEmail,
             userName, 
-            id,
+            roomId,
             rate,
             review,
             reviewDate:date,

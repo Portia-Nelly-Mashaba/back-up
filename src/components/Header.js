@@ -148,7 +148,7 @@ useEffect(() => {
                   </NavLink>
                 </Menu.Item>
                 <Menu.Item>
-                  <NavLink to="/book" className="block px-4 py-2 text-sm hover:bg-accent/25  hover:text-black text-gray-700 data-[focus]:bg-gray-100">
+                  <NavLink to="/reviews" className="block px-4 py-2 text-sm hover:bg-accent/25  hover:text-black text-gray-700 data-[focus]:bg-gray-100">
                     Reviews
                   </NavLink>
                 </Menu.Item>

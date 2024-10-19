@@ -32,6 +32,7 @@ const CheckoutForm = () => {
     checkOutDate,
     adults,
     kids,
+    id,
     roomType: room_type,  
     roomNo: room_no,  
   } = state;
@@ -40,16 +41,19 @@ const CheckoutForm = () => {
   // Function to save the booking to Firestore
   const saveBooking = async () => {
     const today = new Date();
+    const formattedCheckInDate = checkInDate.toDateString(); 
+    const formattedCheckOutDate = checkOutDate.toDateString();
     const bookingData = {
       userEmail,
       userName,
       userAddress,
       totalAmount,
       numberOfNights,
-      checkInDate,
-      checkOutDate,
+      checkInDate: formattedCheckInDate, 
+    checkOutDate: formattedCheckOutDate,
       adults,
       kids,
+      roomId: id,
       roomNo: room_no,  
       roomType: room_type,  
       bookingDate: today.toDateString(), 
