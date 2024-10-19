@@ -1,4 +1,8 @@
+import { doc, updateDoc } from 'firebase/firestore';
 import React, { useState } from 'react';
+import { db } from '../../../firebase/config';
+import { toast } from 'react-toastify';
+
 
 const ProductModal = ({ isOpen, onClose, booking }) => {
   const [activeTab, setActiveTab] = useState('booking');
@@ -14,12 +18,30 @@ const ProductModal = ({ isOpen, onClose, booking }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle the update logic here
-    // e.g., call an API to update booking with bookingDetails
-    console.log('Updated Booking:', bookingDetails);
-    onClose(); // Close the modal after update
+
+   
+    const bookingRef = doc(db, 'bookings', bookingDetails.id); 
+
+    try {
+      // Update the document in Firestore
+      await updateDoc(bookingRef, {
+        bookingStatus: bookingDetails.bookingStatus,
+        // Add other fields you want to update as necessary
+        roomNo: bookingDetails.roomNo,
+        roomType: bookingDetails.roomType,
+        adults: bookingDetails.adults,
+        kids: bookingDetails.kids,
+        numberOfNights: bookingDetails.numberOfNights,
+      });
+      console.log('Booking updated successfully');
+      toast.success('Status has been updated Successfully')
+      onClose(); // Close the modal after successful update
+    } catch (error) {
+      console.error("Error updating booking: ", error);
+      toast.error(error)
+    }
   };
 
   return (
@@ -117,8 +139,8 @@ const ProductModal = ({ isOpen, onClose, booking }) => {
                 <div className="col-span-2 sm:col-span-1">
                   <label htmlFor="bookingStatus" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Booking Status</label>
                   <select id="bookingStatus" name="bookingStatus" value={bookingDetails.bookingStatus} onChange={handleChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                    <option value="booked">Booked</option>
-                    <option value="cancel">Cancel</option>
+                    <option value="Room Booked">Booked</option>
+                    <option value="cancelled">Cancel</option>
                     <option value="check-in">Check-In</option>
                     <option value="completed">Completed</option>
                   </select>
@@ -159,7 +181,7 @@ const ProductModal = ({ isOpen, onClose, booking }) => {
                     <strong>Id Number:</strong> {booking.userAddress.id_no}
                   </div>
                   <div>
-                    <strong>Phone Name:</strong> {booking.userAddress.phone_no}
+                    <strong>Phone Number:</strong> {booking.userAddress.phone_no}
                   </div>
                   <div>
                     <strong>Booked Email:</strong> {booking.userAddress.email}
@@ -181,7 +203,7 @@ const ProductModal = ({ isOpen, onClose, booking }) => {
                     )}
                   </div>
                   <div>
-                    <strong>Booked date:</strong> {booking.bookingDate} at {booking.bookingTime}
+                    <strong>Booked Date:</strong> {booking.bookingDate} at {booking.bookingTime}
                   </div>
                   <div>
                     <strong>Status:</strong> {booking.bookingStatus}

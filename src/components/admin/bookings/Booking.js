@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { SpinnerDotted } from 'spinners-react';
 import { useNavigate } from 'react-router-dom';
 import ProductModal from './SingleBooking';
+import ChangeBookingStatus from '../changeBookingStatus/ChangeBookingDetails';
 
 const Booking = () => {
   const [bookings, setBookings] = useState([]);
@@ -79,6 +80,7 @@ const Booking = () => {
                     <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 text-blue-500 tracking-wider">Booking Number</th>
                     <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 text-blue-500 tracking-wider">Booking Status</th>
                     <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 text-blue-500 tracking-wider">Action</th>
+                    <th className="px-6 py-3 border-b-2 border-gray-300"></th>
                   </tr>
                 </thead>
                 <tbody className="bg-white">
@@ -113,11 +115,12 @@ const Booking = () => {
                               onClick={() => openModal(booking)}>
                               View Details
                             </button>
-                            <button className="px-5 py-2 border-blue-500 border text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
-                              onClick={() => handleEdit(id)}> {/* Edit Button */}
-                              Edit
-                            </button>
                           </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                         
+                        <ChangeBookingStatus bookingId={booking.id} />
+                      
                         </td>
                       </tr>
                     )
