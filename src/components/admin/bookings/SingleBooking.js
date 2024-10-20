@@ -139,7 +139,7 @@ const ProductModal = ({ isOpen, onClose, booking }) => {
                 <div className="col-span-2 sm:col-span-1">
                   <label htmlFor="bookingStatus" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Booking Status</label>
                   <select id="bookingStatus" name="bookingStatus" value={bookingDetails.bookingStatus} onChange={handleChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                    <option value="Room Booked">Booked</option>
+                    <option value="Roomooked">Booked</option>
                     <option value="cancelled">Cancel</option>
                     <option value="check-in">Check-In</option>
                     <option value="completed">Completed</option>

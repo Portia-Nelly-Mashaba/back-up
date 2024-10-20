@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 import { FaBath, FaCheck, FaCoffee, FaDumbbell, FaHeart, FaMugHot, FaParking, FaShareAlt, FaStar, FaSwimmingPool, FaWifi } from 'react-icons/fa';
@@ -7,34 +8,56 @@ import KidsDropdown from '../../components/KidsDropdown.js';
 import CheckIn from '../../components/CheckIn.js';
 import CheckOut from '../../components/CheckOut.js';
 import ScrollToTop from '../../components/ScrollToTop.js';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, where } from 'firebase/firestore';
 import { db } from '../../firebase/config.js';
 import Review from '../../components/Review.js';
+import { query } from 'express';
 
 const HotelDetails = () => {
   const [room, setRoom] = useState(null);
+  const [bookedDates, setBookedDates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [checkInDate, setCheckInDate] = useState(null);
   const [checkOutDate, setCheckOutDate] = useState(null);
-  const [numberOfAdults, setNumberOfAdults] = useState(1); // Default value
-  const [numberOfKids, setNumberOfKids] = useState(0); // Default value
+  const [numberOfAdults, setNumberOfAdults] = useState(1); 
+  const [numberOfKids, setNumberOfKids] = useState(0); 
   const { id } = useParams();
 
   useEffect(() => {
-    const fetchRoom = async () => {
+    const fetchRoomAndBookings = async () => {
       try {
         const roomDoc = doc(db, 'rooms', id); // Fetch room by ID
         const roomData = await getDoc(roomDoc);
+
         if (roomData.exists()) {
-          console.log('Room data:', roomData.data());
           setRoom(roomData.data());
+
+          // Fetch bookings for this room
+          const bookingsQuery = query(collection(db, 'bookings'), where('roomId', '==', id));
+          const bookingsSnapshot = await getDocs(bookingsQuery);
+          const bookings = bookingsSnapshot.docs.map(doc => doc.data());
+
+          // Convert booked date ranges into an array of individual dates
+          const allBookedDates = [];
+          bookings.forEach((booking) => {
+            let currentDate = new Date(booking.checkInDate.toDate());
+            const endDate = new Date(booking.checkOutDate.toDate());
+
+            while (currentDate <= endDate) {
+              allBookedDates.push(new Date(currentDate));
+              currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+            }
+          });
+          
+          setBookedDates(allBookedDates); // Save booked dates
         }
         setLoading(false);
       } catch (error) {
         console.error('Error fetching room data: ', error);
       }
     };
-    fetchRoom();
+
+    fetchRoomAndBookings();
   }, [id]);
 
   if (loading) {
@@ -169,10 +192,13 @@ const HotelDetails = () => {
               <div className='flex flex-col space-y-4 mb-4'>
                 <h3>Your Reservation</h3>
                 <div className='h-[60px]'>
-                  <CheckIn onChange={(date) => setCheckInDate(date)} />
+                <CheckIn onChange={(date) => setCheckInDate(date)} excludeDates={bookedDates} />
                 </div>
                 <div className='h-[60px]'>
-                  <CheckOut onChange={(date) => setCheckOutDate(date)} />
+                <CheckOut onChange={(date) => setCheckOutDate(date)} excludeDates={bookedDates} />
+                </div>
+                <div className='h-[60px]'>
+                <CheckIn onChange={(date) => setCheckInDate(date)} excludeDates={bookedDates} />
                 </div>
                 <div className='h-[60px]'>
                   <AdultsDropdown onChange={(count) => setNumberOfAdults(count)} />

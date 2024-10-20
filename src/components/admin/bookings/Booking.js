@@ -41,7 +41,7 @@ const Booking = () => {
   };
 
   const handleEdit = (id) => {
-    navigate.push(`/edit-booking/${id}`); // Navigate to the edit page with booking ID
+    navigate.push(`/edit-booking/${id}`); 
   };
 
   const openModal = (booking) => {
